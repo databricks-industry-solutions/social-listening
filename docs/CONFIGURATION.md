@@ -271,6 +271,8 @@ Add or modify personas in `src/config/config.yaml` to match your organization's 
 - `display_text`: The human-readable name shown in the UI
 - `prompt`: The system prompt that defines how the AI generates reports for this persona
 
+You will also need to add matching display names in `src/app/config.yaml`.
+
 ---
 
 ## App Configuration and Customization
