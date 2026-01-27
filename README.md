@@ -13,13 +13,22 @@ Games Social Listening is an end-to-end platform that transforms player feedback
 
 - **Ingests** reviews and feedback from Steam, Google Play, and Reddit
 - **Translates** content to English using AI translation
-- **Analyzes** sentiment across 12 gameplay categories using Meta Llama 3.3 70B
+- **Analyzes** sentiment across 12 gameplay categories using AI
 - **Generates** AI-powered reports tailored for different personas (Community Manager, Marketer, Game Designer)
 - **Visualizes** insights through interactive dashboards and Genie Space natural language queries
 
 ## 📦 Installation
 
 This solution uses [Databricks Asset Bundle](https://docs.databricks.com/en/dev-tools/bundles/index.html) with automated setup via the `Demo_Setup.ipynb` notebook:
+
+### Prerequisites
+- Databricks workspace with Unity Catalog enabled
+- **Workspace Admin Must Add `*.databricksapps.com` as a domain allowed to embed AI/BI Dashboards**
+  <img width="1550" height="498" alt="prereqs_domain" src="docs/assets/installation_alt_prereqs_domain.png" />
+
+- Databricks CLI installed (for manual deployment)
+- Serverless compute available
+- SQL Warehouse for dashboard and app queries
 
 ### Demo Quick Start (Recommended)
 
@@ -36,27 +45,17 @@ This solution uses [Databricks Asset Bundle](https://docs.databricks.com/en/dev-
      - Configure with your workspace settings
      - Load sample data and execute sentiment analysis (Pokemon Go from Google Play)
 
-6. **Access the deployed app** in your Databricks workspace
-
-**Workspace Admin Must Add `*.databricksapps.com` as a domain allowed to embedd AI/BI Dashboards** in order for the app to function as expected.
+6. **Access the deployed app** in your Databricks workspace!
+    - (Left sidebar > Compute > Apps)
 
 ### Alternative: Configure DAB Deployment
 
 For production or custom deployments, see [docs/CONFIGURATION.md#dab-deployment](docs/CONFIGURATION.md#dab-deployment) for CLI-based deployment.
 
-### Prerequisites
-- Databricks workspace with Unity Catalog enabled
-- **Workspace Admin Must Add `*.databricksapps.com` as a domain allowed to embedded AI/BI Dashboards**
-  <img width="1550" height="498" alt="prereqs_domain" src="docs/assets/installation_alt_prereqs_domain.png" />
-
-- Databricks CLI installed (for manual deployment)
-- Serverless compute available
-- SQL Warehouse for dashboard and app queries
-
 ## 🏗️ Project Structure
 
 ```
-social-listening/
+cmeg_player_feedback_app/
 ├── databricks.yml                    # Databricks Asset Bundle configuration
 ├── Demo_Setup.ipynb                  # Automated installation notebook
 ├── resources/                        # DAB resource definitions
@@ -91,7 +90,7 @@ social-listening/
 
 ## 🔄 Demo Contents
 
-The demo implements a **6-stage Social Listening analysis**:
+The demo implements a **6-stage social listening analysis**:
 
 ### Stage 1: Ingestion
 - **Pulls user generated content/feedback** from Steam, Google Play, or Reddit
@@ -161,16 +160,10 @@ To destroy all demo resources, uncomment the last two cells of the `Demo_Setup.i
 - Destroy resources managed by DAB
 - Destroy Genie Space via API
 
-## Contributing
-
-1. **git clone** this project locally
-2. Utilize the Databricks CLI to test your changes against a Databricks workspace of your choice
-3. Contribute to repositories with pull requests (PRs), ensuring that you always have a second-party review from a capable teammate
-
 ## ⚠️ Disclaimer
 
 Please note the code in this project is provided for your exploration only, and is not formally supported by Databricks with Service Level Agreements (SLAs). It is provided AS-IS and we do not make any guarantees of any kind. Please do not submit a support ticket relating to any issues arising from the use of this project.
 
-## 📄 Third-Party Package Licenses
+## 📄 License
 
-&copy; 2025 Databricks, Inc. All rights reserved. The source in this project is provided subject to the Databricks License [https://databricks.com/db-license-source]. All included or referenced third party libraries are subject to the licenses set forth in [third_party_licenses.md](third_party_licenses.md).
+This project is licensed under the Databricks License. See [licenses.md](licenses.md) for more info.
