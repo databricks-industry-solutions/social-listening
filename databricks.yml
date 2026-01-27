@@ -41,3 +41,9 @@ targets:
   # E.g. for CICD deployment
   dev:
     mode: development
+
+    variables:
+      catalog: dev_CICD_social_listening
+      schema: player_feedback
+      warehouse_id: ""
+      prefix: dev_CICD
