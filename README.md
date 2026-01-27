@@ -1,26 +1,165 @@
-# Databricks Solution Accelerator Template - MODIFY THIS README.md
+# Games Social Listening Demo
 
-[![Databricks](https://img.shields.io/badge/Databricks-Solution_Accelerator-FF3621?style=for-the-badge&logo=databricks)](https://databricks.com)
 [![Unity Catalog](https://img.shields.io/badge/Unity_Catalog-Enabled-00A1C9?style=for-the-badge)](https://docs.databricks.com/en/data-governance/unity-catalog/index.html)
 [![Serverless](https://img.shields.io/badge/Serverless-Compute-00C851?style=for-the-badge)](https://docs.databricks.com/en/compute/serverless.html)
 
-## Installation Guidelines
+**AI-powered player feedback analysis from Steam, Google Play, and Reddit using sentiment extraction and natural language insights.**
 
-1. Clone the project you'd like to run into your Databricks Workspace
+Maintainers: [Thomas Xu](thomas.xu@databricks.com), [Brendan Byam](brendan.byam@databricks.com)
 
-<img width="1726" height="677" alt="Screenshot 2025-07-23 at 11 05 25 AM" src="https://github.com/user-attachments/assets/55b1729f-ad07-420e-a271-843266abfb71" />
+## 🚀 What is Games Social Listening?
 
-2. Open the Asset Bundle Editor in the Databricks UI
+Games Social Listening is an end-to-end platform that transforms player feedback into actionable insights using AI. It:
 
-<img width="1120" height="665" alt="Screenshot 2025-07-23 at 11 06 12 AM" src="https://github.com/user-attachments/assets/d1f91256-eb8f-4456-8d88-c0a37b1bd4c5" />
+- **Ingests** reviews and feedback from Steam, Google Play, and Reddit
+- **Translates** content to English using AI translation
+- **Analyzes** sentiment across 12 gameplay categories using Meta Llama 3.3 70B
+- **Generates** AI-powered reports tailored for different personas (Community Manager, Marketer, Game Designer)
+- **Visualizes** insights through interactive dashboards and Genie Space natural language queries
 
-3. Click on "Deploy"
+## 📦 Installation
 
-<img width="1523" height="902" alt="Screenshot 2025-07-23 at 11 09 37 AM" src="https://github.com/user-attachments/assets/9564cbdd-c5c5-4210-bf27-2b19e6efc85b" />
+This solution uses [Databricks Asset Bundle](https://docs.databricks.com/en/dev-tools/bundles/index.html) with automated setup via the `Demo_Setup.ipynb` notebook:
 
-4. Navigate to the Deployments tab in the Asset Bundle UI (🚀 icon) and click "Run" on the job available. This will run the notebooks from this project sequentially.
+### Demo Quick Start (Recommended)
 
-<img width="1527" height="880" alt="Screenshot 2025-07-23 at 11 10 13 AM" src="https://github.com/user-attachments/assets/0f612882-7123-449b-8349-1835bc59523c" />
+1. **Clone the Repository to your Databricks workspace using a Git Folder**
+2. Access the `Demo_Setup.ipynb` notebook and populate the widgets with your desired values
+   <img width="877" height="89" alt="installation_quickstart_widgets" src="docs/assets/installation_quickstart_widgets.png" />
+
+4. **Select 'Run All'** to execute all cells in the notebook using serverless compute
+   
+   <img width="1326" height="61" alt="installation_quickstart_run_all" src="docs/assets/installation_quickstart_run_all.png" />
+
+   - The notebook will automatically:
+     - Deploy all resources (Jobs, Pipeline, Dashboard, App) via a Databricks Asset Bundle
+     - Configure with your workspace settings
+     - Load sample data and execute sentiment analysis (Pokemon Go from Google Play)
+
+6. **Access the deployed app** in your Databricks workspace
+
+**Workspace Admin Must Add `*.databricksapps.com` as a domain allowed to embedd AI/BI Dashboards** in order for the app to function as expected.
+
+### Alternative: Configure DAB Deployment
+
+For production or custom deployments, see [docs/CONFIGURATION.md#dab-deployment](docs/CONFIGURATION.md#dab-deployment) for CLI-based deployment.
+
+### Prerequisites
+- Databricks workspace with Unity Catalog enabled
+- **Workspace Admin Must Add `*.databricksapps.com` as a domain allowed to embedded AI/BI Dashboards**
+  <img width="1550" height="498" alt="prereqs_domain" src="docs/assets/installation_alt_prereqs_domain.png" />
+
+- Databricks CLI installed (for manual deployment)
+- Serverless compute available
+- SQL Warehouse for dashboard and app queries
+
+## 🏗️ Project Structure
+
+```
+social-listening/
+├── databricks.yml                    # Databricks Asset Bundle configuration
+├── Demo_Setup.ipynb                  # Automated installation notebook
+├── resources/                        # DAB resource definitions
+│   ├── Games Social Listening - Job.job.yml
+│   ├── Games Social Listening - Pipeline.pipeline.yml
+│   ├── Games Social Listening - Dashboard.dashboard.yml
+│   └── Games Social Listening - App.app.yml
+├── src/
+│   ├── Abstracted_Ingestion.ipynb   # Multi-platform ingestion notebook
+│   ├── Summary_Report_Generator.ipynb  # AI report generation
+│   ├── app/                          # FastAPI web application
+│   │   ├── main.py                   # App entry point
+│   │   ├── config.yaml               # App configuration
+│   │   ├── routers/                  # API endpoints
+│   │   ├── utils/                    # Helper functions
+│   │   └── templates/                # UI templates
+│   ├── pipeline/                     # Spark Declarative Pipeline transformations
+│   │   └── transformations/
+│   │       ├── 01_ai_translation.py
+│   │       ├── 02_ai_sentiment_extraction.py
+│   │       ├── 03_parse_sentiment.py
+│   │       └── 04_reporting_layer.py
+│   ├── ingestion_utils/              # Platform-specific ingestors
+│   │   ├── steam_ingestor.py
+│   │   ├── google_play_ingestor.py
+│   │   └── reddit_ingestor.py
+│   └── config/                       # Configuration files
+│       └── config.yaml               # Sentiment categories & personas
+└── docs/                             # Documentation
+    └── CONFIGURATION.md              # Customization & production guide
+```
+
+## 🔄 Demo Contents
+
+The demo implements a **6-stage Social Listening analysis**:
+
+### Stage 1: Ingestion
+- **Pulls user generated content/feedback** from Steam, Google Play, or Reddit
+- **Sampling**: Max 10K content records per source, sampled to 2K if exceeded
+
+### Stage 2: AI Translation
+- **Translates** all content to English using `ai_translate()`
+- **Preserves** original text for reference
+
+### Stage 3: Sentiment Extraction
+- **Uses Meta Llama 3.3 70B** for AI sentiment analysis
+- **Extracts sentiment** across categories and subtopics from user-generated content
+
+### Stage 4: Reporting Layer Data
+- **Creates gold tables** optimized for analytics
+- **Powers** dashboard, app, and Genie Space
+
+### Stage 5: Summary Report
+- **Generates summary reports** of sentiment analysis for 3 personas (Community Manager, Marketer, Game Designer)
+
+### Stage 6: Consolidates Insight and Actions in the App
+- Add new games for sentiment analysis
+- Review Summary Reports
+- Ask natual language questions with genie
+- Drill into deeper insights with the dashboard embedded into the app
+
+
+## 🎯 Deployed Components
+
+| Component | Description |
+|-----------|-------------|
+| **Spark Declarative Pipeline** | 4-stage transformation: translation → sentiment extraction → parsing → gold tables |
+| **Orchestration Job** | Daily/New Game content ingestion + pipeline execution + dashboard refresh + generate summary report for new games |
+| **AI/BI Dashboard** | Interactive analytics with filters, visualizations, and drill into sub topic sentiment |
+| **Genie Space** | Natural language queries on player feedback data |
+| **Weekly Summary Report Job** | Update the AI-generated summary reports for all tracked games |
+| **Databricks App** | Add games and explore insights |
+
+## ⚙️ Configuration and Customization
+
+See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for:
+- Customizing the demo for your own needs
+- Productionalizing DAB and assets
+
+## 📚 Documentation
+
+- **[docs/CONFIGURATION.md](docs/CONFIGURATION.md)** - Customization, production deployment, and API keys setup
+- **[src/app/README.md](src/app/README.md)** - Databricks App structure and configuration
+- **[src/pipeline/README.md](src/pipeline/README.md)** - Pipeline development and transformations
+- **[src/ingestion_utils/README.md](src/ingestion_utils/README.md)** - Details on ingestion from platforms, sampling, and adding new platforms for ingestion
+
+## 🎮 Supported Platforms
+
+| Platform | Content Type | Identifier Format | API Key Required |
+|----------|--------------|-------------------|------------------|
+| **Steam** | Game Reviews | Steam App ID (e.g., `730` for CS:GO) | Yes |
+| **Google Play** | App Reviews | Package name (e.g., `com.nianticlabs.pokemongo`) | No |
+| **Reddit** | Subreddit Posts | Subreddit name (e.g., `gaming`) | Yes |
+
+To enable Steam and Reddit ingestion, see [docs/CONFIGURATION.md#api-keys--secrets](docs/CONFIGURATION.md#api-keys--secrets).
+
+**Want to add a new platform?** The ingestion system uses an abstract `DataIngestor` class that makes it easy to add new sources (YouTube, TikTok, etc.). See [src/ingestion_utils/README.md](src/ingestion_utils/README.md) for a step-by-step guide. 
+
+## Demo Teardown
+
+To destroy all demo resources, uncomment the last two cells of the `Demo_Setup.ipynb` and run both to:
+- Destroy resources managed by DAB
+- Destroy Genie Space via API
 
 ## Contributing
 
@@ -28,11 +167,10 @@
 2. Utilize the Databricks CLI to test your changes against a Databricks workspace of your choice
 3. Contribute to repositories with pull requests (PRs), ensuring that you always have a second-party review from a capable teammate
 
+## ⚠️ Disclaimer
 
-## 📄 Third-Party Package Licenses - FILL IN WITH YOUR PROJECT'S OPEN SOURCE PACKAGES + LICENSING
+Please note the code in this project is provided for your exploration only, and is not formally supported by Databricks with Service Level Agreements (SLAs). It is provided AS-IS and we do not make any guarantees of any kind. Please do not submit a support ticket relating to any issues arising from the use of this project.
 
-&copy; 2025 Databricks, Inc. All rights reserved. The source in this project is provided subject to the Databricks License [https://databricks.com/db-license-source]. All included or referenced third party libraries are subject to the licenses set forth below.
+## 📄 Third-Party Package Licenses
 
-| Package | License | Copyright |
-|---------|---------|-----------|
-| | | |
+&copy; 2025 Databricks, Inc. All rights reserved. The source in this project is provided subject to the Databricks License [https://databricks.com/db-license-source]. All included or referenced third party libraries are subject to the licenses set forth in [third_party_licenses.md](third_party_licenses.md).

@@ -1,0 +1,19 @@
+resources:
+  jobs:
+    games_social_listening_weekly_summary_report:
+      name: ${var.prefix} - Games Social Listening - Weekly Summary Report
+      trigger:
+        pause_status: PAUSED
+        periodic:
+          interval: 1
+          unit: WEEKS
+      tasks:
+        - task_key: report_generator
+          notebook_task:
+            notebook_path: ../src/Summary_Report_Generator.ipynb
+            source: WORKSPACE
+      queue:
+        enabled: true
+      parameters:
+        - name: update_type
+          default: REFRESH

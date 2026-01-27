@@ -1,0 +1,13 @@
+:root {
+    --color-primary: #4A90E2; /** default: #4A90E2 */
+    --color-secondary: #2563EB; /** default: #2563EB */
+
+    /** Other colors (note: some are in RGB to allow for dynamic opacity) */
+    --color-dark-accent-primary-rgb: 74, 144, 226; /** default: 74, 144, 226 */
+    --color-dark-accent-secondary-rgb: 37, 99, 235; /** default: 37, 99, 235 */
+    --color-muted-primary: #2e6bb8; /** default: #2e6bb8 */
+    --color-muted-secondary: #1d4a8a; /** default: #1d4a8a */
+    --color-muted-dark-primary: #1e5ba8; /** default: #1e5ba8 */
+    --color-muted-dark-secondary: #052147; /** default: #052147 */
+    --color-muted-shadow-rgb: 30, 91, 168; /** default: 30, 91, 168 */
+}

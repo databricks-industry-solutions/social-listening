@@ -1,0 +1,105 @@
+# This file is for non-sensitive configuration data, e.g. job IDs, dashboard URLs, etc.
+# For sensitive data such as API keys, use Databricks secrets and add to the Databricks app and app.yaml.
+
+# This section will be autofilled by the Demo Setup notebook
+databricks:
+  host: "..."
+  catalog: "..."
+  schema: "..."
+  ingestion_job_id: "..."
+  dashboard:
+    url:
+      base: "..."
+      game_filter_suffix: "..."
+      category_page_game_filter_suffix: "..."
+  genie:
+    space_id: "..."
+
+ui:
+  main:
+    personas:
+      # These only affect display text, such as in dropdowns. To change the actual personas,
+      # edit the config.yaml in the parent src directory. These do not have to match 1:1 with the
+      # actual personas.
+      display_names:
+        community_manager: "Community Manager"
+        marketer: "Marketer"
+        game_designer: "Game Designer"
+    # The items and ordering here determine what tiles are displayed in the Add Game section.
+    # If this section is blank, a default set will be displayed.
+    # The options are: steam, google_play, reddit, generic_table.
+    add_game_sources:
+      - steam
+      - google_play
+      - reddit
+  sidebar:
+    header:
+      title: "Social Listening"
+      subtitle: "Databricks Games Demo"
+      icon: "/assets/databricks/databricks-symbol-color.svg"
+    pages:
+      home:
+        display_name: "Home"
+        icon: "/assets/databricks/primary-icon-orange-data-lakehouse-heavy.svg"
+        subtitle: "Your gateway to game data analytics and insights."
+      choose_game:
+        display_name: "Choose Game"
+        icon: "/assets/databricks/primary-icon-orange-data-quality-3.svg"
+        subtitle: "Select a game from the Databricks catalog."
+        tile_description: "Select from pre-loaded titles" # For tiles such as on the Home page/tab.
+      add_game:
+        display_name: "Add Game"
+        icon: "/assets/databricks/primary-icon-orange-gaming.svg"
+        subtitle: "Choose a source to add a new game or new content."
+        tile_description: "Add new titles and content" # For tiles such as on the Home page/tab.
+      report:
+        display_name: "Report"
+        icon: "/assets/databricks/primary-icon-orange-dashboards.svg"
+      dive_deeper:
+        display_name: "Dive Deeper"
+        icon: "/assets/databricks/primary-icon-orange-magnify-analytics.svg"
+        subtitle: "Explore detailed analytics and insights."
+    # To have no links at the bottom of the sidebar, remove/comment this entire links_section section.
+    link_sections:
+      # The bottom part of the sidebar will render links/sections dynamically based
+      # on these items; simply add/remove sections in the following format as desired.
+      go_beyond:
+        display_name: "Go Beyond"
+        links:
+          databricks_apps_docs:
+            display_name: "Databricks Apps Docs"
+            url: "https://docs.databricks.com/en/dev-tools/databricks-apps/index.html"
+            icon: "/assets/databricks/primary-icon-white-broader-business-insights.svg"
+          custom_ai_chat_ui:
+            display_name: "Custom AI Chat UI"
+            url: "https://docs.databricks.com/aws/en/generative-ai/agent-framework/chat-app"
+            icon: "/assets/databricks/primary-icon-white-chat.svg"
+      internal:
+        display_name: "Internal Links"
+        links:
+          # The URLs will be autofilled by the Demo Setup notebook
+          catalog:
+            display_name: "Catalog"
+            url: "..."
+            icon: "/assets/databricks/primary-icon-white-unity-catalog.svg"
+          published_dashboard:
+            display_name: "Dashboard"
+            url: "..."
+            icon: "/assets/databricks/primary-icon-white-analytics-on-your-data-lakes.svg"
+          genie_space:
+            display_name: "Genie Space"
+            url: "..."
+            icon: "/assets/databricks/primary-icon-white-redash-sql-analytics.svg"
+          lakeflow_job:
+            display_name: "Lakeflow Job"
+            url: "..."
+            icon: "/assets/databricks/primary-icon-white-authentication-service.svg"
+          other_resources:
+            display_name: "Other Resources"
+            url: "https://docs.databricks.com/en/dev-tools/databricks-apps/index.html"
+            icon: "/assets/databricks/primary-icon-white-notebook.svg"
+  genie:
+    sample_questions:
+      - "What are the top 5 things players dislike about the game?"
+      - "What are players saying about the game balance?"
+      - "What do players like most about the game?"

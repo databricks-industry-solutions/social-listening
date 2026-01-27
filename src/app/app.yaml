@@ -1,0 +1,16 @@
+command: [
+  "python",
+  "main.py"
+]
+
+env:
+  - name: "DATABRICKS_WAREHOUSE_ID"
+    valueFrom: "sql-warehouse"
+  - name: "REDDIT_CLIENT_ID"
+    valueFrom: "reddit_client_id"
+  - name: "REDDIT_CLIENT_SECRET"
+    valueFrom: "reddit_client_secret"
+  - name: "REDDIT_USER_AGENT"
+    valueFrom: "reddit_user_agent"
+  - name: "STEAM_API_KEY"
+    valueFrom: "steam_api_key"

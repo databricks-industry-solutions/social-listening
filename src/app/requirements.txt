@@ -1,0 +1,17 @@
+# Required Python version: >=3.14.0
+
+backoff==2.2.1
+databricks-sdk==0.74.0
+databricks-sql-connector==4.1.4
+fastapi==0.115.5
+flask==3.1.2
+google-play-scraper==1.2.7
+markdown==3.10
+pandas==2.2.3
+plotly==6.5.0
+praw==7.8.1
+python-dotenv==1.2.1
+pyyaml==6.0.1
+rapidfuzz==3.13.0
+sqlparse==0.5.4
+uvicorn[standard]==0.32.1
