@@ -102,16 +102,16 @@ jobs:
           echo "DEPLOY_ENV=dev" >> $GITHUB_ENV
 
       - name: Validate bundle
-        run: databricks bundle validate --target dev --var="environment=${{ env.DEPLOY_ENV }}, warehouse_id=${{ env.WAREHOUSE_ID }}"
+        run: databricks bundle validate --target dev --var="environment=${{ env.DEPLOY_ENV }},warehouse_id=${{ env.WAREHOUSE_ID }}"
 
       - name: Deploy workflow
-        run: databricks bundle deploy --target dev --var="environment=${{ env.DEPLOY_ENV }}, warehouse_id=${{ env.WAREHOUSE_ID }}"
+        run: databricks bundle deploy --target dev --var="environment=${{ env.DEPLOY_ENV }},warehouse_id=${{ env.WAREHOUSE_ID }}"
 
       - name: Run and monitor workflow
         run: |
           echo "Starting workflow execution..."
-          databricks bundle run demo_workflow --target dev --var="environment=${{ env.DEPLOY_ENV }}, warehouse_id=${{ env.WAREHOUSE_ID }}"
+          databricks bundle run games_social_listening --target dev --var="environment=${{ env.DEPLOY_ENV }},warehouse_id=${{ env.WAREHOUSE_ID }}"
 
       - name: Cleanup PR deployment
         run: |
-          databricks bundle destroy --target dev --var="environment=${{ env.DEPLOY_ENV }}, warehouse_id=${{ env.WAREHOUSE_ID }}" || true
+          databricks bundle destroy --target dev --var="environment=${{ env.DEPLOY_ENV }},warehouse_id=${{ env.WAREHOUSE_ID }}" || true
