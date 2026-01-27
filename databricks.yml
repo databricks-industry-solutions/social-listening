@@ -23,6 +23,7 @@ variables:
   warehouse_id:
     description: warehouse for reporting
   prefix:
+    # Lowercase letters, numbers, and dashes only
     description: prefix for all asset display names
 
 targets:
@@ -43,7 +44,7 @@ targets:
     mode: development
 
     variables:
-      catalog: dev_CICD_social_listening
+      catalog: dev_cicd_social_listening
       schema: player_feedback
       warehouse_id: ""
-      prefix: dev_CICD
+      prefix: dev-cicd
