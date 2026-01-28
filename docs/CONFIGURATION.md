@@ -100,27 +100,29 @@ The weekly summary report job is already configured with a schedule to update AI
 
 To enable ingestion from Reddit and Steam, you'll need to provide API keys to authenticate API calls.
 
-#### Create Databricks Secrets
+#### 1. Add Secrets
+- Option 1: [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/)
 
-```bash
-# Create Reddit secrets
-databricks secrets put-secret social_listening_app reddit_client_id --string-value "YOUR_ACTUAL_CLIENT_ID"
-databricks secrets put-secret social_listening_app reddit_client_secret --string-value "YOUR_ACTUAL_CLIENT_SECRET"
-databricks secrets put-secret social_listening_app reddit_user_agent --string-value "social_listening:v1.0 (by /u/yourusername)"
+  ```bash
+  # Create Steam secret
+  databricks secrets put-secret social_listening_app steam_api_key --string-value "YOUR_ACTUAL_STEAM_KEY"
+  
+  # Create Reddit secrets
+  databricks secrets put-secret social_listening_app reddit_client_id --string-value "YOUR_ACTUAL_CLIENT_ID"
+  databricks secrets put-secret social_listening_app reddit_client_secret --string-value "YOUR_ACTUAL_CLIENT_SECRET"
+  databricks secrets put-secret social_listening_app reddit_user_agent --string-value "social_listening:v1.0 (by /u/yourusername)"
 
-# Create Steam secret
-databricks secrets put-secret social_listening_app steam_api_key --string-value "YOUR_ACTUAL_STEAM_KEY"
-```
+  # Verify Secrets Creation
+  databricks secrets list-secrets social_listening_app
+  ```
 
-#### Verify Secrets Creation
+- Option 2: [Databricks Notebook](https://docs.databricks.com/aws/en/notebooks/)
 
-```bash
-databricks secrets list-secrets social_listening_app
-```
+  - Use the `Secrets_Helper.ipynb` notebook provided in this repository.
 
-#### Secrets in DAB
+#### 2. Update Secrets in DAB Configuration
 
-Uncomment the reference to the secrets in the App DAB resource (`resources/Games Social Listening - App.app.yml`):
+Uncomment the references to the secrets you added above in the App DAB resource (`resources/Games Social Listening - App.app.yml`). For secrets you didn't add values for, leave those lines commented:
 
 ```yaml
 resources:

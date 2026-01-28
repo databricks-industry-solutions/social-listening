@@ -22,14 +22,14 @@ Games Social Listening is an end-to-end platform that transforms player feedback
 This solution uses [Databricks Asset Bundle](https://docs.databricks.com/en/dev-tools/bundles/index.html) with automated setup via the `Demo_Setup.ipynb` notebook:
 
 ### Prerequisites
-- Databricks workspace with Unity Catalog enabled
+- A [Databricks workspace](https://docs.databricks.com/aws/en/admin/workspace/) with [Unity Catalog enabled](https://docs.databricks.com/aws/en/data-governance/unity-catalog/enable-workspaces)
 - **Workspace Admin Must Add `*.databricksapps.com` as a domain allowed to embed AI/BI Dashboards**
     - Settings > Workspace Admin > Security > External Access:
   <img width="1550" height="498" alt="prereqs_domain" src="docs/assets/installation_alt_prereqs_domain.png" />
 
-- Databricks CLI installed (for manual deployment)
-- Serverless compute available
-- SQL Warehouse for dashboard and app queries
+- [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/) installed (for manual deployment)
+- [Serverless compute](https://docs.databricks.com/aws/en/compute/serverless/) available
+- [SQL Warehouse](https://docs.databricks.com/aws/en/compute/sql-warehouse/) for dashboard and app queries
 
 ### Demo Quick Start (Recommended)
 
