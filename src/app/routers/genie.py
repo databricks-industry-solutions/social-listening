@@ -86,7 +86,7 @@ async def start_genie_conversation(request: genie_schemas.GenieStartRequest):
                 'has_dataframe': False,
                 'dataframe_html': None,
                 'query_text': None,
-                'error': str(e)
+                'error': f"{str(e)}. Check if app has CAN_RUN permissions on the Genie space."
             }
         )
 
