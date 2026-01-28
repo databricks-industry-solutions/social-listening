@@ -30,7 +30,7 @@ async def search_reddit_subreddits(query: str = Query(..., min_length=1, descrip
                 'matches': [],
                 'count': 0,
                 'limit': 0,
-                'error': 'RedditHelper not initialized. Check Reddit API credentials.'
+                'error': 'RedditHelper not initialized. Check Reddit API credentials and that the Databricks Secret(s) have been added to the app.'
             }
         )
     
@@ -76,7 +76,7 @@ async def get_reddit_subreddit_info(subreddit_name: str, reddit_helper: RedditHe
             status_code=500,
             content={
                 'success': False,
-                'error': 'RedditHelper not initialized. Check Reddit API credentials.',
+                'error': 'RedditHelper not initialized. Check Reddit API credentials and that the Databricks Secret(s) have been added to the app.',
                 'subreddit_info': None
             }
         )

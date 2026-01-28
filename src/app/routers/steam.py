@@ -27,7 +27,7 @@ async def search_steam_games(query: str = Query(..., min_length=1, description="
             status_code=500,
             content={
                 'success': False,
-                'error': 'SteamHelper not initialized. See logs for more details.',
+                'error': 'SteamHelper not initialized. Check Steam API credentials and that the Databricks Secret(s) have been added to the app.',
                 'matches': [],
                 'count': 0,
                 'limit': 50
@@ -77,7 +77,7 @@ async def get_steam_app_info(app_id: str, steam_helper: SteamHelper = Depends(ge
             status_code=500,
             content={
                 'success': False,
-                'error': 'SteamHelper not initialized.',
+                'error': 'SteamHelper not initialized. Check Steam API credentials and that the Databricks Secret(s) have been added to the app.',
                 'app_info': None
             }
         )

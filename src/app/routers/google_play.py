@@ -27,7 +27,7 @@ async def search_google_play_games(query: str = Query(..., min_length=1, descrip
             status_code=500,
             content={
                 'success': False,
-                'error': 'GooglePlayHelper not initialized.',
+                'error': 'GooglePlayHelper not initialized. Check Google Play API credentials and that the Databricks Secret(s) have been added to the app.',
                 'matches': [],
                 'count': 0,
                 'limit': 30
@@ -76,7 +76,7 @@ async def get_google_play_app_info(app_id: str, google_play_helper: GooglePlayHe
             status_code=500,
             content={
                 'success': False,
-                'error': 'GooglePlayHelper not initialized.',
+                'error': 'GooglePlayHelper not initialized. Check Google Play API credentials and that the Databricks Secret(s) have been added to the app.',
                 'app_info': None
             }
         )

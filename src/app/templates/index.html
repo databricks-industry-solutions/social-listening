@@ -1777,13 +1777,19 @@
                     resultsCount.textContent = 'No matches found. Try a different search term.';
                     resultsCount.style.color = '#FFA726';
                 } else {
-                    // Error case
-                    alert(`Error: ${data.error || 'Unknown error occurred'}`);
+                    // Error case - display error message in red text
+                    resultsSelect.innerHTML = '';
+                    resultsHeader.style.display = 'block';
+                    resultsCount.textContent = `Error: ${data.error || 'Unknown error occurred'}`;
+                    resultsCount.style.color = '#dc3545'; // red
                 }
                 
             } catch (error) {
                 console.error('Error searching Steam:', error);
-                alert(`Connection error: ${error.message}`);
+                resultsSelect.innerHTML = '';
+                resultsHeader.style.display = 'block';
+                resultsCount.textContent = `Connection error: ${error.message}`;
+                resultsCount.style.color = '#dc3545'; // red
             } finally {
                 // Re-enable button
                 searchBtn.disabled = false;
@@ -2011,13 +2017,19 @@
                     resultsCount.textContent = 'No matches found. Try a different search term.';
                     resultsCount.style.color = '#FFA726';
                 } else {
-                    // Error case
-                    alert(`Error: ${data.error || 'Unknown error occurred'}`);
+                    // Error case - display error message in red text
+                    resultsSelect.innerHTML = '';
+                    resultsHeader.style.display = 'block';
+                    resultsCount.textContent = `Error: ${data.error || 'Unknown error occurred'}`;
+                    resultsCount.style.color = '#dc3545'; // red
                 }
                 
             } catch (error) {
                 console.error('Error searching Google Play:', error);
-                alert(`Connection error: ${error.message}`);
+                resultsSelect.innerHTML = '';
+                resultsHeader.style.display = 'block';
+                resultsCount.textContent = `Connection error: ${error.message}`;
+                resultsCount.style.color = '#dc3545'; // red
             } finally {
                 // Re-enable button
                 searchBtn.disabled = false;
