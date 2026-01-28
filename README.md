@@ -24,6 +24,7 @@ This solution uses [Databricks Asset Bundle](https://docs.databricks.com/en/dev-
 ### Prerequisites
 - Databricks workspace with Unity Catalog enabled
 - **Workspace Admin Must Add `*.databricksapps.com` as a domain allowed to embed AI/BI Dashboards**
+    - Settings > Workspace Admin > Security > External Access:
   <img width="1550" height="498" alt="prereqs_domain" src="docs/assets/installation_alt_prereqs_domain.png" />
 
 - Databricks CLI installed (for manual deployment)
@@ -32,21 +33,22 @@ This solution uses [Databricks Asset Bundle](https://docs.databricks.com/en/dev-
 
 ### Demo Quick Start (Recommended)
 
-1. **Clone the Repository to your Databricks workspace using a Git Folder**
-2. Access the `Demo_Setup.ipynb` notebook and populate the widgets with your desired values
+1. **Clone the Repository to your Databricks workspace using a [Git Folder](https://docs.databricks.com/aws/en/repos/repos-setup)**
+2. Access the `Demo_Setup.ipynb` notebook and populate the widgets with your desired values.
    <img width="877" height="89" alt="installation_quickstart_widgets" src="docs/assets/installation_quickstart_widgets.png" />
+    - Create the catalog and schema if they do not already exist.
 
 4. **Select 'Run All'** to execute all cells in the notebook using serverless compute
    
-   <img width="1326" height="61" alt="installation_quickstart_run_all" src="docs/assets/installation_quickstart_run_all.png" />
+    <img width="1326" height="61" alt="installation_quickstart_run_all" src="docs/assets/installation_quickstart_run_all.png" />
 
-   - The notebook will automatically:
-     - Deploy all resources (Jobs, Pipeline, Dashboard, App) via a Databricks Asset Bundle
-     - Configure with your workspace settings
-     - Load sample data and execute sentiment analysis (Pokemon Go from Google Play)
-
+    - The notebook will automatically:
+        - Deploy all resources (Jobs, Pipeline, Dashboard, App) via a Databricks Asset Bundle
+        - Configure with your workspace settings
+        - Load sample data and execute sentiment analysis (Pokemon Go from Google Play)
+    - Should take 10-15 minutes
 6. **Access the deployed app** in your Databricks workspace!
-    - (Left sidebar > Compute > Apps)
+    - Left sidebar > Compute > Apps
 
 ### Alternative: Configure DAB Deployment
 
