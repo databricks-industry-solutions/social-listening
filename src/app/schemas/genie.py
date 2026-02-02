@@ -3,6 +3,7 @@ from typing import Optional
 
 class GenieStartRequest(BaseModel):
     game_name: str
+    content_type: Optional[str] = None
 
 class GenieQueryRequest(BaseModel):
     conversation_id: str

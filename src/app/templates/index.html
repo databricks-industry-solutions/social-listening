@@ -2925,9 +2925,11 @@
             const genieChatColumn = document.getElementById('genie-chat-column');
             const reportDarkContainer = document.getElementById('report-dark-container');
             
-            // Extract game name from unique value (format: "gameName|||contentType")
+            // Extract game name and content type from unique value (format: "gameName|||contentType")
             const selectedValue = gameDropdown.value;
-            const gameName = selectedValue ? (gameDropdown.options[gameDropdown.selectedIndex]?.dataset.gameName || selectedValue.split('|||')[0]) : '';
+            const selectedOption = gameDropdown.options[gameDropdown.selectedIndex];
+            const gameName = selectedValue ? (selectedOption?.dataset.gameName || selectedValue.split('|||')[0]) : '';
+            const contentType = selectedOption?.dataset.contentType || '';
             const persona = personaDropdown.value;
             
             if (!gameName || !persona) {
@@ -3050,7 +3052,7 @@
                     }, 50);
                     
                     // Initialize Genie conversation for this game
-                    initializeGenieConversation(gameName);
+                    initializeGenieConversation(gameName, contentType);
                 } else {
                     // Show report area with error message (no animation for errors)
                     reportDarkContainer.style.opacity = '1';
@@ -3269,8 +3271,8 @@
         window.genieInitializing = false;
         
         // Initialize Genie conversation
-        async function initializeGenieConversation(gameName) {
-            console.log(`Initializing Genie conversation for game: ${gameName}`);
+        async function initializeGenieConversation(gameName, contentType = '') {
+            console.log(`Initializing Genie conversation for game: ${gameName}, content_type: ${contentType}`);
             window.genieReady = false;
             window.genieInitializing = true;
             
@@ -3317,7 +3319,10 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ game_name: gameName })
+                    body: JSON.stringify({ 
+                        game_name: gameName,
+                        content_type: contentType 
+                    })
                 });
                 
                 const startData = await startResponse.json();
