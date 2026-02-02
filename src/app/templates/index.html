@@ -129,6 +129,10 @@
                                     <img src="/assets/reddit/Reddit_Logo.webp" alt="Reddit">
                                     <span>Reddit</span>
                                 </button>
+                                <button class="filter-btn active" data-filter="other" id="filter-other">
+                                    <img src="/assets/databricks/primary-icon-orange-unity-catalog.svg" alt="Other">
+                                    <span>Other</span>
+                                </button>
                             </div>
                         </div>
                         <div class="dropdown-options-list" id="game-dropdown-options-list">
@@ -1168,7 +1172,7 @@
         // Fetch games from the backend
         // Helper function to get icon path based on content type
         function getIconForContentType(contentType) {
-            if (!contentType) return null;
+            if (!contentType) return '/assets/databricks/primary-icon-orange-unity-catalog.svg';
             
             const contentTypeLower = contentType.toLowerCase();
             if (contentTypeLower.includes('steam')) {
@@ -1178,12 +1182,13 @@
             } else if (contentTypeLower.includes('reddit')) {
                 return '/assets/reddit/Reddit_Logo.webp';
             }
-            return null;
+            // Return Unity Catalog icon for "other" content types
+            return '/assets/databricks/primary-icon-orange-unity-catalog.svg';
         }
         
         // Helper function to get CSS class based on content type
         function getContentTypeClass(contentType) {
-            if (!contentType) return '';
+            if (!contentType) return 'content-other';
             
             const contentTypeLower = contentType.toLowerCase();
             if (contentTypeLower.includes('steam')) {
@@ -1193,7 +1198,8 @@
             } else if (contentTypeLower.includes('reddit')) {
                 return 'content-reddit';
             }
-            return '';
+            // Return "other" class for content types that don't match known sources
+            return 'content-other';
         }
         
         // Initialize custom dropdown behavior
@@ -1263,14 +1269,15 @@
             const activeFilters = {
                 steam: document.getElementById('filter-steam').classList.contains('active'),
                 google: document.getElementById('filter-google').classList.contains('active'),
-                reddit: document.getElementById('filter-reddit').classList.contains('active')
+                reddit: document.getElementById('filter-reddit').classList.contains('active'),
+                other: document.getElementById('filter-other').classList.contains('active')
             };
             
             filterDropdownOptions(searchQuery, activeFilters);
         }
         
         // Filter dropdown options based on search query and active filters
-        function filterDropdownOptions(searchQuery, activeFilters = {steam: true, google: true, reddit: true}) {
+        function filterDropdownOptions(searchQuery, activeFilters = {steam: true, google: true, reddit: true, other: true}) {
             const optionsListDiv = document.getElementById('game-dropdown-options-list');
             const options = optionsListDiv.querySelectorAll('.custom-dropdown-option');
             const query = searchQuery.toLowerCase().trim();
@@ -1290,6 +1297,9 @@
                 } else if (contentType.includes('google') && activeFilters.google) {
                     filterMatches = true;
                 } else if (contentType.includes('reddit') && activeFilters.reddit) {
+                    filterMatches = true;
+                } else if (!contentType.includes('steam') && !contentType.includes('google') && !contentType.includes('reddit') && activeFilters.other) {
+                    // "Other" category: anything that doesn't match steam, google, or reddit
                     filterMatches = true;
                 }
                 
@@ -2602,7 +2612,7 @@
             `;
             
             try {
-                const response = await fetch(`/api/ingestion/run-job?source_content_id=${encodeURIComponent(tableName)}&content_type=${encodeURIComponent('Casino Review')}&game_name=${'BricksterCasino'}&update_type=${encodeURIComponent('NEW_GAME')}`, {
+                const response = await fetch(`/api/ingestion/run-job?source_content_id=${encodeURIComponent(tableName)}&content_type=${encodeURIComponent('Generic')}&game_name=${'Generic'}&update_type=${encodeURIComponent('NEW_GAME')}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

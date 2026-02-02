@@ -6,8 +6,6 @@ resources:
         - task_key: pull_source_content
           notebook_task:
             notebook_path: ../src/Abstracted_Ingestion.ipynb
-            base_parameters:
-              updateType: REFRESH
             source: WORKSPACE
         - task_key: sentiment-extraction
           depends_on:

@@ -354,6 +354,10 @@ h1 {
     background-color: rgba(75, 216, 113, 0.3);
 }
 
+.dropdown-icon-square.content-other {
+    background-color: rgba(255, 206, 70, 0.3);
+}
+
 /* Rounded corners for selected value display */
 .custom-dropdown-selected .dropdown-icon-container {
     border-top-left-radius: 6px;
