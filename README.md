@@ -154,7 +154,9 @@ See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for:
 | **Google Play** | App Reviews | Package name (e.g., `com.nianticlabs.pokemongo`) | No |
 | **Reddit** | Subreddit Posts | Subreddit name (e.g., `gaming`) | Yes |
 
-To enable Steam and Reddit ingestion, see [docs/CONFIGURATION.md#api-keys--secrets](docs/CONFIGURATION.md#api-keys--secrets).
+To enable Steam and Reddit ingestion, see [CONFIGURATION.md](docs/CONFIGURATION.md#enable-steam-and-reddit).
+
+You can also load data from your own bronze table in Unity Catalog, provided it is in the correct format. For more info see [CONFIGURATION.md](docs/CONFIGURATION.md#ingest-from-generic-table).
 
 **Want to add a new platform?** The ingestion system uses an abstract `DataIngestor` class that makes it easy to add new sources (YouTube, TikTok, etc.). See [src/ingestion_utils/README.md](src/ingestion_utils/README.md) for a step-by-step guide. 
 
