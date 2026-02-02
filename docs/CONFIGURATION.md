@@ -7,10 +7,11 @@ This guide covers **customizing** the Games Social Listening demo and **producti
 **Moving to Long Term Usage**
 - [DAB Deployment](#dab-deployment)
 - [Enable Job Scheduling](#enable-job-scheduling)
-- [API Keys & Secrets](#api-keys--secrets)
 - [Remove Sampling (Optional)](#remove-sampling-optional)
 
 **Customization**
+- [Enable Steam and Reddit](#enable-steam-and-reddit)
+- [Ingest from Generic Table](#ingest-from-generic-table)
 - [Add New Platforms](#add-new-platforms)
 - [LLM Endpoint Configuration](#llm-endpoint-configuration)
 - [Sentiment Categories](#sentiment-categories)
@@ -96,9 +97,21 @@ resources:
 
 The weekly summary report job is already configured with a schedule to update AI-generated reports weekly, but this can be updated if necessary. Simply update the `pause_status` from `PAUSED` to `UNPAUSED`.
 
-### API Keys & Secrets
+### Remove Sampling (Optional)
 
-To enable ingestion from Reddit and Steam, you'll need to provide API keys to authenticate API calls.
+By default, the demo limits ingestion to the equivalent of 2,000 reviews per game for performance and cost optimization. For production use cases requiring full data coverage, you may want to remove or adjust this sampling.
+
+For more information on sampling strategy and configuration, see the [Ingestion Sampling Documentation](../src/ingestion_utils/README.md#-sampling-strategy).
+
+---
+
+## Customization
+
+Customize the demo for your use case, industry, and more.
+
+### Enable Steam and Reddit
+
+To enable ingestion from Steam and Reddit, you'll need to provide API keys to authenticate API calls.
 
 #### 1. Add Secrets
 - Option 1: [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/)
@@ -148,17 +161,48 @@ resources:
             key: steam_api_key
 ```
 
-### Remove Sampling (Optional)
+### Ingest from Generic Table
 
-By default, the demo limits ingestion to the equivalent of 2,000 reviews per game for performance and cost optimization. For production use cases requiring full data coverage, you may want to remove or adjust this sampling.
+You may ingest data from a generic table you've already created in Unity Catalog. 
 
-For more information on sampling strategy and configuration, see the [Ingestion Sampling Documentation](../src/ingestion_utils/README.md#-sampling-strategy).
+1. Create your table
+    - It can be located anywhere in Unity Catalog.
+    - It can include multiple `game_name` values and `content_type` values (see below). 
+    - It must include the following columns:
+      - `content_id`
+        - Type: string
+        - E.g. "123", "abc-def", etc.  
+      - `content_type`
+        - Type: string
+        - E.g. "Steam Review", "Reddit Comment"  
+      - `game_name`
+        - Type: string
+        - E.g. "Call of Duty"
+      - `content_text`
+        - Type: string
+        - E.g. a game review, social media comment, etc.
+      - `timestamp`
+        - Type: timestamp
+        - E.g. 2026-02-02T20:34:55.126+00:00
+      - `author_id`
+        - Type: string
+        - E.g. "abc-123", "john_smith_98"
+      - `content_metadata`
+        - Type: string
+        - Can be empty, a JSON string, or any other value you would like. This column is unused in the pipeline, and is used as a catch-all for relevant metadata associated with each piece of content.
+        - E.g. "{"upvotes": 123, "tags": ["action", "adventure"]}"
 
----
+1. Change the App configuration file
+    - Starting from the root of this repo, navigate to `src/app/config.yaml`.
+    - Add `generic_table` to the `ui/main/add_game_sources` section.
 
-## Customization
+1. Re-run the `Demo_Setup` notebook.
 
-Customize the demo for your use case, industry, and more.
+1. Re-open the App, and you should now see the "Generic Table" option on the "Add Game" page.
+    - Follow the on-screen instructions to add your bronze table.
+    - Your bronze table will remain unchanged, and rows will be added to the auto-generated bronze/silver/gold tables from the Lakeflow Job and Pipeline.
+    - You may append to the same bronze table and re-add it multiple times (there is built-in de-duplication).
+
 
 ### Add New Platforms
 

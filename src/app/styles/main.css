@@ -204,10 +204,11 @@ h1 {
     display: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    flex-direction: column;
 }
 
 .custom-dropdown.open .custom-dropdown-options {
-    display: block;
+    display: flex;
 }
 
 /* Search input styling */
@@ -215,6 +216,7 @@ h1 {
     padding: 10px;
     border-bottom: 1px solid #e0e0e0;
     background: #f8f9fa;
+    flex-shrink: 0;
 }
 
 .dropdown-search-input {
@@ -292,8 +294,9 @@ h1 {
 
 /* Options list with scrolling */
 .dropdown-options-list {
-    max-height: 280px;
+    flex: 1;
     overflow-y: auto;
+    min-height: 0;
 }
 
 .custom-dropdown-option {
@@ -352,6 +355,10 @@ h1 {
 
 .dropdown-icon-square.content-google {
     background-color: rgba(75, 216, 113, 0.3);
+}
+
+.dropdown-icon-square.content-other {
+    background-color: rgba(255, 206, 70, 0.3);
 }
 
 /* Rounded corners for selected value display */

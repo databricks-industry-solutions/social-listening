@@ -129,6 +129,10 @@
                                     <img src="/assets/reddit/Reddit_Logo.webp" alt="Reddit">
                                     <span>Reddit</span>
                                 </button>
+                                <button class="filter-btn active" data-filter="other" id="filter-other">
+                                    <img src="/assets/databricks/primary-icon-orange-unity-catalog.svg" alt="Other">
+                                    <span>Other</span>
+                                </button>
                             </div>
                         </div>
                         <div class="dropdown-options-list" id="game-dropdown-options-list">
@@ -1119,7 +1123,9 @@
         function updateReportTitle() {
             const gameDropdown = document.getElementById('game-dropdown');
             const reportTitle = document.getElementById('report-title');
-            const selectedGame = gameDropdown.value;
+            const selectedValue = gameDropdown.value;
+            // Extract game name from unique value (format: "gameName|||contentType")
+            const selectedGame = selectedValue ? (gameDropdown.options[gameDropdown.selectedIndex]?.dataset.gameName || selectedValue.split('|||')[0]) : '';
             const noGameSection = document.getElementById('report-no-game-section');
             const gameContent = document.getElementById('report-game-content');
             const viewReportBtn = document.getElementById('view-report-btn');
@@ -1168,7 +1174,7 @@
         // Fetch games from the backend
         // Helper function to get icon path based on content type
         function getIconForContentType(contentType) {
-            if (!contentType) return null;
+            if (!contentType) return '/assets/databricks/primary-icon-orange-unity-catalog.svg';
             
             const contentTypeLower = contentType.toLowerCase();
             if (contentTypeLower.includes('steam')) {
@@ -1178,12 +1184,13 @@
             } else if (contentTypeLower.includes('reddit')) {
                 return '/assets/reddit/Reddit_Logo.webp';
             }
-            return null;
+            // Return Unity Catalog icon for "other" content types
+            return '/assets/databricks/primary-icon-orange-unity-catalog.svg';
         }
         
         // Helper function to get CSS class based on content type
         function getContentTypeClass(contentType) {
-            if (!contentType) return '';
+            if (!contentType) return 'content-other';
             
             const contentTypeLower = contentType.toLowerCase();
             if (contentTypeLower.includes('steam')) {
@@ -1193,7 +1200,8 @@
             } else if (contentTypeLower.includes('reddit')) {
                 return 'content-reddit';
             }
-            return '';
+            // Return "other" class for content types that don't match known sources
+            return 'content-other';
         }
         
         // Initialize custom dropdown behavior
@@ -1263,14 +1271,15 @@
             const activeFilters = {
                 steam: document.getElementById('filter-steam').classList.contains('active'),
                 google: document.getElementById('filter-google').classList.contains('active'),
-                reddit: document.getElementById('filter-reddit').classList.contains('active')
+                reddit: document.getElementById('filter-reddit').classList.contains('active'),
+                other: document.getElementById('filter-other').classList.contains('active')
             };
             
             filterDropdownOptions(searchQuery, activeFilters);
         }
         
         // Filter dropdown options based on search query and active filters
-        function filterDropdownOptions(searchQuery, activeFilters = {steam: true, google: true, reddit: true}) {
+        function filterDropdownOptions(searchQuery, activeFilters = {steam: true, google: true, reddit: true, other: true}) {
             const optionsListDiv = document.getElementById('game-dropdown-options-list');
             const options = optionsListDiv.querySelectorAll('.custom-dropdown-option');
             const query = searchQuery.toLowerCase().trim();
@@ -1290,6 +1299,9 @@
                 } else if (contentType.includes('google') && activeFilters.google) {
                     filterMatches = true;
                 } else if (contentType.includes('reddit') && activeFilters.reddit) {
+                    filterMatches = true;
+                } else if (!contentType.includes('steam') && !contentType.includes('google') && !contentType.includes('reddit') && activeFilters.other) {
+                    // "Other" category: anything that doesn't match steam, google, or reddit
                     filterMatches = true;
                 }
                 
@@ -1351,10 +1363,12 @@
                     // Add games to both dropdowns
                     data.games.forEach(gameEntry => {
                         // Hidden select option (for compatibility)
+                        // Use unique value combining game_name and content_type
                         const option = document.createElement('option');
-                        option.value = gameEntry.game_name;
+                        option.value = `${gameEntry.game_name}|||${gameEntry.content_type}`;
                         option.textContent = gameEntry.game_name;
                         option.dataset.contentType = gameEntry.content_type;
+                        option.dataset.gameName = gameEntry.game_name;
                         dropdown.appendChild(option);
                         
                         // Custom dropdown option (with icon)
@@ -1392,8 +1406,8 @@
                         
                         // Handle option click
                         customOption.addEventListener('click', function() {
-                            // Update hidden select
-                            dropdown.value = gameEntry.game_name;
+                            // Update hidden select with unique value
+                            dropdown.value = `${gameEntry.game_name}|||${gameEntry.content_type}`;
                             
                             // Update custom dropdown display
                             const dropdownText = selectedDiv.querySelector('.dropdown-text');
@@ -1571,7 +1585,7 @@
         
         // Handle dropdown selection
         document.getElementById('game-dropdown').addEventListener('change', function(e) {
-            const selectedGame = e.target.value;
+            const selectedValue = e.target.value;
             const selectedGameDiv = document.getElementById('selected-game');
             const selectedGameName = document.getElementById('selected-game-name');
             const selectedGameContentType = document.getElementById('selected-game-content-type');
@@ -1584,10 +1598,11 @@
             window.loadedPersonasGame = null;
             
             const iconHtml = '<img src="/assets/databricks/primary-icon-orange-dashboards.svg" alt="Report" class="page-title-icon">';
-            if (selectedGame) {
-                // Get the selected option's content type
+            if (selectedValue) {
+                // Get the selected option's content type and game name
                 const selectedOption = e.target.options[e.target.selectedIndex];
                 const contentType = selectedOption.dataset.contentType || 'Unknown';
+                const selectedGame = selectedOption.dataset.gameName || selectedValue.split('|||')[0];
                 
                 selectedGameName.textContent = selectedGame;
                 selectedGameContentType.textContent = contentType;
@@ -2602,7 +2617,7 @@
             `;
             
             try {
-                const response = await fetch(`/api/ingestion/run-job?source_content_id=${encodeURIComponent(tableName)}&content_type=${encodeURIComponent('Casino Review')}&game_name=${'BricksterCasino'}&update_type=${encodeURIComponent('NEW_GAME')}`, {
+                const response = await fetch(`/api/ingestion/run-job?source_content_id=${encodeURIComponent(tableName)}&content_type=${encodeURIComponent('Generic')}&game_name=${'Generic'}&update_type=${encodeURIComponent('NEW_GAME')}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -2910,7 +2925,11 @@
             const genieChatColumn = document.getElementById('genie-chat-column');
             const reportDarkContainer = document.getElementById('report-dark-container');
             
-            const gameName = gameDropdown.value;
+            // Extract game name and content type from unique value (format: "gameName|||contentType")
+            const selectedValue = gameDropdown.value;
+            const selectedOption = gameDropdown.options[gameDropdown.selectedIndex];
+            const gameName = selectedValue ? (selectedOption?.dataset.gameName || selectedValue.split('|||')[0]) : '';
+            const contentType = selectedOption?.dataset.contentType || '';
             const persona = personaDropdown.value;
             
             if (!gameName || !persona) {
@@ -3033,7 +3052,7 @@
                     }, 50);
                     
                     // Initialize Genie conversation for this game
-                    initializeGenieConversation(gameName);
+                    initializeGenieConversation(gameName, contentType);
                 } else {
                     // Show report area with error message (no animation for errors)
                     reportDarkContainer.style.opacity = '1';
@@ -3252,8 +3271,8 @@
         window.genieInitializing = false;
         
         // Initialize Genie conversation
-        async function initializeGenieConversation(gameName) {
-            console.log(`Initializing Genie conversation for game: ${gameName}`);
+        async function initializeGenieConversation(gameName, contentType = '') {
+            console.log(`Initializing Genie conversation for game: ${gameName}, content_type: ${contentType}`);
             window.genieReady = false;
             window.genieInitializing = true;
             
@@ -3300,7 +3319,10 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ game_name: gameName })
+                    body: JSON.stringify({ 
+                        game_name: gameName,
+                        content_type: contentType 
+                    })
                 });
                 
                 const startData = await startResponse.json();

@@ -41,21 +41,29 @@ async def start_genie_conversation(request: genie_schemas.GenieStartRequest):
     Start a new Genie conversation for a specific game.
     
     Args:
-        request: Contains game_name
+        request: Contains game_name and optional content_type
     
     Returns:
         GenieResponse with conversation_id and initial response
     """
     try:
         game_name = request.game_name
-        logger.info(f"Starting new Genie conversation for game: {game_name}")
+        content_type = request.content_type
+        logger.info(f"Starting new Genie conversation for game: {game_name}, content_type: {content_type}")
         
         # Create starter prompt to seed the conversation
-        starter_prompt = (
-            f"Ignore the previous games we have talked about in the past. "
-            f"The game I'm interested in now is '{game_name}' and my subsequent questions "
-            f"that don't specify a game name will be referring to {game_name} until we start talking about a different game."
-        )
+        if content_type:
+            starter_prompt = (
+                f"Ignore the previous games we have talked about in the past. "
+                f"The game I'm interested in now is '{game_name}' with content type '{content_type}' and my subsequent questions "
+                f"that don't specify a game name will be referring to {game_name} ({content_type}) until we start talking about a different game."
+            )
+        else:
+            starter_prompt = (
+                f"Ignore the previous games we have talked about in the past. "
+                f"The game I'm interested in now is '{game_name}' and my subsequent questions "
+                f"that don't specify a game name will be referring to {game_name} until we start talking about a different game."
+            )
         
         conversation_id, text_response, df_response, query_text = start_new_conversation(starter_prompt)
         
