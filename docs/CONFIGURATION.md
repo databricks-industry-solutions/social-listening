@@ -113,6 +113,11 @@ Customize the demo for your use case, industry, and more.
 
 To enable ingestion from Steam and Reddit, you'll need to provide API keys to authenticate API calls.
 
+#### 0. Obtain Keys
+- Steam: Follow the instructions to obtain a free Web API key [here](https://steamcommunity.com/dev). You will need a Steam account.
+- Reddit: Sign up to create a free Developer account [here](https://developers.reddit.com/).
+  - This will get you these required keys: `client_id`, `client_secret`, `user_agent`.
+
 #### 1. Add Secrets
 - Option 1: [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/)
 
