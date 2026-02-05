@@ -101,7 +101,7 @@ The weekly summary report job is already configured with a schedule to update AI
 
 By default, the demo limits ingestion to the equivalent of 2,000 reviews per game for performance and cost optimization. For production use cases requiring full data coverage, you may want to remove or adjust this sampling.
 
-For more information on sampling strategy and configuration, see the [Ingestion Sampling Documentation](../src/ingestion_utils/README.md#-sampling-strategy).
+For more information on sampling strategy and configuration, see the [Ingestion Sampling Documentation](../src/ingestion_utils/README.md#sampling-strategy).
 
 ---
 

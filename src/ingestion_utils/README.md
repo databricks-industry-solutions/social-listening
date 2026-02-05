@@ -2,7 +2,7 @@
 
 This directory contains platform-specific ingestors for fetching player reviews and feedback.
 
-## 📂 Structure
+## Structure
 
 ```
 ingestion_utils/
@@ -12,7 +12,7 @@ ingestion_utils/
 └── reddit_ingestor.py         # Reddit posts
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 All ingestors inherit from `DataIngestor` and return a standardized schema:
 
@@ -28,7 +28,7 @@ All ingestors inherit from `DataIngestor` and return a standardized schema:
 }
 ```
 
-## 📊 Sampling Strategy
+## Sampling Strategy
 
 To ensure manageable data volumes and reasonable processing times, the ingestion system implements automatic sampling:
 
@@ -45,7 +45,7 @@ To modify sampling behavior, either edit the classes in this directory or simply
 
 **Note**: Larger sample sizes will increase processing time and costs for AI translation and sentiment extraction.
 
-## ➕ Adding a New Platform
+## Adding a New Platform
 
 To add a new platform (e.g., YouTube comments):
 
