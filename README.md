@@ -23,11 +23,12 @@ This solution uses [Databricks Asset Bundle](https://docs.databricks.com/en/dev-
 
 ### Prerequisites
 - A [Databricks workspace](https://docs.databricks.com/aws/en/admin/workspace/) with [Unity Catalog enabled](https://docs.databricks.com/aws/en/data-governance/unity-catalog/enable-workspaces)
-- **Workspace Admin Must Add `*.databricksapps.com` as a domain allowed to embed AI/BI Dashboards**
+    - You must be a [Workspace Admin](https://docs.databricks.com/aws/en/admin/users-groups/users) to set up the demo (after setup, normal users can run and use it).
+- Add `*.databricksapps.com` as a domain allowed to embed AI/BI Dashboards
     - Settings > Workspace Admin > Security > External Access:
   <img width="1550" height="498" alt="prereqs_domain" src="docs/assets/installation_alt_prereqs_domain.png" />
 
-- [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/) installed (for manual deployment)
+- [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/) installed (optional, for manual deployment)
 - [Serverless compute](https://docs.databricks.com/aws/en/compute/serverless/) available
 - [SQL Warehouse](https://docs.databricks.com/aws/en/compute/sql-warehouse/) for dashboard and app queries
 
