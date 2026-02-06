@@ -105,7 +105,7 @@ jobs:
         run: databricks bundle validate --target dev --var="environment=${{ env.DEPLOY_ENV }},warehouse_id=${{ env.WAREHOUSE_ID }}"
 
       - name: Deploy workflow
-        run: databricks bundle deploy --target dev --var="environment=${{ env.DEPLOY_ENV }},warehouse_id=${{ env.WAREHOUSE_ID }}"
+        run: databricks bundle deploy --auto-approve --target dev --var="environment=${{ env.DEPLOY_ENV }},warehouse_id=${{ env.WAREHOUSE_ID }}"
 
       # Uncomment and add a resources::jobs entry in databricks.yml called "demo_setup_job" to run the workflow automatically
       # - name: Run and monitor workflow
@@ -115,4 +115,4 @@ jobs:
 
       - name: Cleanup PR deployment
         run: |
-          databricks bundle destroy --target dev --var="environment=${{ env.DEPLOY_ENV }},warehouse_id=${{ env.WAREHOUSE_ID }}" || true
+          databricks bundle destroy --auto-approve --target dev --var="environment=${{ env.DEPLOY_ENV }},warehouse_id=${{ env.WAREHOUSE_ID }}" || true
