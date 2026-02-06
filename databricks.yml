@@ -44,7 +44,7 @@ targets:
     mode: development
 
     variables:
-      catalog: dev_cicd_social_listening
-      schema: player_feedback
+      catalog: cmegdemos_catalog
+      schema: cicd_social_listening
       warehouse_id: ""
       prefix: dev-cicd
