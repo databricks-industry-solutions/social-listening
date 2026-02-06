@@ -166,6 +166,11 @@ resources:
             key: steam_api_key
 ```
 
+#### 3. Re-deploy the App
+Simply re-run the `Demo_Setup.ipynb` notebook from top to bottom. When going to the app page in Databricks, you should see the newly added secrets under "App Resources":
+
+![app_resources_page](assets/app_resources.png)
+
 ### Ingest from Generic Table
 
 You may ingest data from a generic table you've already created in Unity Catalog. 
