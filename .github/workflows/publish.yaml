@@ -428,6 +428,10 @@ jobs:
               os.remove('notebook_fragments.json')
           EOF
 
+          # Copy docs assets so embedded README screenshots work on GitHub Pages
+          mkdir -p site/docs/assets
+          cp -r docs/assets site/docs/assets
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

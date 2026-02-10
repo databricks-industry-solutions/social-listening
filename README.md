@@ -143,6 +143,10 @@ See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for:
 
 ## 📚 Documentation
 
+>**Documentation Website**:  
+https://databricks-industry-solutions.github.io/social-listening/
+
+Documentation files in this repository:
 - **[docs/CONFIGURATION.md](docs/CONFIGURATION.md)** - Customization, production deployment, and API keys setup
 - **[src/app/README.md](src/app/README.md)** - Databricks App structure and configuration
 - **[src/pipeline/README.md](src/pipeline/README.md)** - Pipeline development and transformations

@@ -74,8 +74,8 @@ The app uses CSS variables for theming. Customize by editing `styles/theme.css`:
 
 ### Pre-built Themes
 
-- **Default Theme** (`theme_example_default.css`): Clean, minimal design
-- **RMG Theme** (`theme_example_rmg.css`): Branded for RMG Games
+- **Default Theme** (`theme_example_default.css`): Simple blue theme
+- **RMG Theme** (`theme_example_rmg.css`): Alternate Real Money Gaming (RMG) color scheme
 
 To use a pre-built theme, copy it to `theme.css`:
 
