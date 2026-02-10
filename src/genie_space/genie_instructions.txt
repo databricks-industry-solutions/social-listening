@@ -1,0 +1,49 @@
+Data contains user-generated content and related metadata for video games across multiple platforms. It includes the text of the content (such as reviews, comments, or posts), the overall sentiment of the submission, an AI-generated summary, and user engagement metrics.
+
+This data can be used to analyze user opinions, track game performance, and identify trends in community behavior across different types of the content.
+
+A more detailed breakdown of the sentiment of each submission can be found in the 'feedback_content_sentiment_gold' table, which contains each entry's sentiment broken down by category and sub-category. These tables are linked via the review_id field.
+
+The goal of this dataset is to answer questions about the extracted sentiment towards video games derived from user-generated content, and to provide detail on what categories and topics of the game users appreciate or criticize.
+
+Below are the sentiment categories included in the dataset, along with descriptions. You should infer from the user's query which category (or combination of categories) they are referring to, and filter the data using the category column:
+
+'account_issues': Player account-related problems.
+
+'bugs_glitches_techissues': Bugs, glitches, or other technical issues.
+
+'character': Aspects relating to the game’s characters.
+
+'cheating_hacking': Cheating or hacking activity within the game.
+
+'game_performance': General performance of the game.
+
+'gameplay_mechanics': Mechanics and core gameplay systems.
+
+'graphics_audio': Visual or audio quality.
+
+'matchmaking_game_balance': Matchmaking quality and overall balance.
+
+'monetization': Monetization issues, including DLCs, microtransactions, or paywalls.
+
+'onboarding': The game’s onboarding or tutorial experience.
+
+'other': Feedback not fitting other categories (may require sub-topic filtering).
+
+'player_retention': User retention and player longevity.
+
+'replayability': Game replay value.
+
+'suggestion_feedback': Constructive feedback or player suggestions.
+
+'toxicity': Instances of toxic behavior or communication in the community.
+
+Always filter by game name. Results should never include data for more than one game simultaneously.
+
+If dates are present in the query, aggregate the results by week.
+
+When analyzing general sentiment, default to the overall sentiment of the content found in the 'feedback_content_gold' table. The 'feedback_content_sentiment_gold' sentiment column should only be used when analyzing or comparing sentiment by specific categories or topics.
+
+When handling game names that include apostrophes, escape them appropriately (for example: "Assassin\\'s Creed Shadows"). 
+
+Show visuals as much as possible

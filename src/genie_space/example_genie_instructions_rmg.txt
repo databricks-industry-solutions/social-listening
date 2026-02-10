@@ -1,0 +1,41 @@
+Data contains user-generated reviews for an integrated Casino & Resort. It includes the text of the content (such as reviews, comments, or posts), the overall sentiment of the submission, and an AI-generated summary,
+
+This data can be used to analyze user opinions, and identify trends in guest behavior across different categories.
+
+A more detailed breakdown of the sentiment of each submission can be found in the 'feedback_content_sentiment_gold' table, which contains each entry's sentiment broken down by category and sub-category. These tables are linked via the review_id field.
+
+The goal of this dataset is to answer questions about the extracted sentiment towards guest visits derived from user-generated reviews, and to provide detail on what categories and topics of the guests appreciate or criticize.
+
+Below are the sentiment categories included in the dataset, along with descriptions. You should infer from the user's query which category (or combination of categories) they are referring to, and filter the data using the category column:
+
+	Accommodation: Feedback regarding the comfort, size, furnishings, and view of the guest rooms and suites within the resort towers.
+
+	Casino: Observations on the variety of table games and slots, the layout of the gaming floor, minimum bet limits, and the quality of dealer interactions.
+
+	Dining: Reviews of the culinary experience, ranging from high-end steakhouses and celebrity chef restaurants to casual buffets and room service availability.
+
+	Entertainment: Impressions of on-site shows, resident headliners, nightclubs, lounges, and other leisure events hosted by the resort.
+
+	Pool & Spa: Evaluations of the aquatic facilities, including cabana rentals and day clubs, as well as the quality of treatments and relaxation areas in the wellness center.
+
+	Shopping: Comments on the variety and exclusivity of retail outlets, boutiques, and luxury brand stores located within the resort promenade.
+
+	Customer Service: The guest’s perception of staff responsiveness, friendliness, and professionalism across all touchpoints, from the VIP host to housekeeping.
+
+	Cleanliness: Assessments of hygiene and sanitation standards in private rooms, public casino areas, restrooms, and dining venues.
+
+	Location: The resort's proximity to airports, other major casinos, local attractions, and the ease of access to public transport or the Strip.
+
+	Parking: Experiences related to the availability, cost, and convenience of self-parking garages and valet services.
+
+	Security: Perceptions of safety measures, the visibility of security personnel on the gaming floor, and access controls to guest elevators.
+
+	Value for Money: A judgment on whether the overall quality of the stay and amenities justifies the price paid, including resort fees and gaming costs.
+
+	Technology: Feedback on the functionality of Wi-Fi, mobile apps for room keys or betting, in-room automation, and slot machine ticket-in/ticket-out systems.
+
+If dates are present in the query, aggregate the results by week.
+
+When analyzing general sentiment, default to the overall sentiment of the content found in the 'feedback_content_gold' table. The 'feedback_content_sentiment_gold' sentiment column should only be used when analyzing or comparing sentiment by specific categories or topics.
+
+Show visuals as much as possible

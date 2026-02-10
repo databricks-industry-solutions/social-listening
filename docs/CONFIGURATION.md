@@ -16,6 +16,7 @@ This guide covers **customizing** the Games Social Listening demo and **producti
 - [LLM Endpoint Configuration](#llm-endpoint-configuration)
 - [Sentiment Categories](#sentiment-categories)
 - [Report Personas](#report-personas)
+- [Genie Space](#genie-space)
 
 **App Configuration**
 - [App Configuration and Customization](#app-configuration-and-customization)
@@ -290,13 +291,7 @@ sentiment_categories:
 
 Edit `src/config/config.yaml` to add, remove, or modify categories based on your specific needs.
 
-#### Updating Genie Space
-
-If you modify categories, update the Genie Space instructions to reflect the new categories:
-
-1. Navigate to your Genie Space in Databricks
-2. Click **Edit** → **General Instructions**
-3. Update the category list to match your `config.yaml`
+You should also [update the Genie Space](#genie-space) accordingly afterwards.
 
 ### Report Personas
 
@@ -328,6 +323,19 @@ Add or modify personas in `src/config/config.yaml` to match your organization's 
 - `prompt`: The system prompt that defines how the AI generates reports for this persona
 
 You will also need to add matching display names in `src/app/config.yaml`.
+
+### Genie Space
+
+If you modified the sentiment categories or want to make other updates to the Genie space, you can update the Genie Space instructions by following these steps:
+
+If Genie Space already created:
+1. Navigate to your Genie Space in Databricks (e.g. via bottom-left link in the deployed app)
+2. Click **Edit** → **General Instructions**
+3. Ensure the sentiment category list matches your `config.yaml`
+
+If Genie Space not yet created:
+1. Update the contents of `src/genie_space/genie_instructions.txt`
+2. Re-run `Demo_Setup.ipynb`
 
 ---
 
