@@ -26,7 +26,7 @@ This solution uses [Databricks Asset Bundle](https://docs.databricks.com/en/dev-
     - You must be a [Workspace Admin](https://docs.databricks.com/aws/en/admin/users-groups/users) to set up the demo (after setup, normal users can run and use it).
 - Add `*.databricksapps.com` as a domain allowed to embed AI/BI Dashboards
     - Settings > Workspace Admin > Security > External Access:
-  <img width="1550" height="498" alt="prereqs_domain" src="docs/assets/installation_alt_prereqs_domain.png" />
+![prereqs_domain](docs/assets/installation_alt_prereqs_domain.png)
 
 - [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/) installed (optional, for manual deployment)
 - [Serverless compute](https://docs.databricks.com/aws/en/compute/serverless/) available
@@ -37,14 +37,13 @@ This solution uses [Databricks Asset Bundle](https://docs.databricks.com/en/dev-
 1. **Clone the Repository to your Databricks workspace using a [Git Folder](https://docs.databricks.com/aws/en/repos/repos-setup)**
 2. **(Optional)** - To enable Steam and Reddit ingestion, see [docs/CONFIGURATION.md#enable-ingestion from-reddit-and-steam](docs/CONFIGURATION.md#enable-steam-and-reddit). **This requires API secrets**.
 3. Access the `Demo_Setup.ipynb` notebook and populate the widgets at the top with your desired values.
-   <img width="877" height="89" alt="installation_quickstart_widgets" src="docs/assets/installation_quickstart_widgets.png" />
+![installation_quickstart_widgets](docs/assets/installation_quickstart_widgets.png)
 
     - Create the catalog and schema if they do not already exist.
     - **Note:** The prefix can only contain lowercase letters, numbers, and hyphens, and that hyphens cannot be at the beginning or end.
 
 4. **Select 'Run All'** to execute all cells in the notebook using serverless compute
-   
-    <img width="1326" height="61" alt="installation_quickstart_run_all" src="docs/assets/installation_quickstart_run_all.png" />
+![installation_quickstart_run_all](docs/assets/installation_quickstart_run_all.png)
 
     - The notebook will automatically:
         - Deploy all resources (Jobs, Pipeline, Dashboard, App) via a Databricks Asset Bundle
