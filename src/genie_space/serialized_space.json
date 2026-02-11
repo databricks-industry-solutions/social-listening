@@ -105,7 +105,7 @@
     "text_instructions": [
       {
         "id": "01f0b468487e1c249c71a3c71fa24651",
-        "content": "{GENIE_INSTRUCTIONS}"
+        "content": {GENIE_INSTRUCTIONS}
       }
     ],
     "example_question_sqls": [
