@@ -1,6 +1,5 @@
 bundle:
   name: games_social_listening
-  uuid: b49905e1-a9e6-423c-a468-3ff7f05036f1
 
 include:
   - resources/*.yml
