@@ -15,8 +15,11 @@ databricks:
   genie:
     space_id: "..."
 
+# Modify this section to change aspects of the UI, e.g. display text, icons, etc.
 ui:
   main:
+    content_term: "game" # E.g. for menus like "Select a game"
+    content_term_plural: "games"
     personas:
       # These only affect display text, such as in dropdowns. To change the actual personas,
       # edit the config.yaml in the parent src directory. These do not have to match 1:1 with the

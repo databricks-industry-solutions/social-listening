@@ -64,7 +64,9 @@ src/app/
 
 ## ⚙️ Configuration
 
-The app uses `src/app/config.yaml` for configuration; view that file for more information.
+The app uses `src/app/config.yaml` for configuration; view that file for specific details on configurable options.
+
+After modifying that file (or modifying the [styling](#-styling)), redeploy the app (e.g. by re-running `Demo_Setup.ipynb`)
 
 ## 🎨 Styling
 

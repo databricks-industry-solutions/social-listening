@@ -114,7 +114,7 @@
                     </div>
                     <div class="custom-dropdown-options" id="game-dropdown-options">
                         <div class="dropdown-search-container">
-                            <input type="text" class="dropdown-search-input" id="game-dropdown-search" placeholder="Search games...">
+                            <input type="text" class="dropdown-search-input" id="game-dropdown-search" placeholder="">
                             <div class="dropdown-filter-buttons">
                                 <span class="filter-label"></span>
                                 <button class="filter-btn active" data-filter="steam" id="filter-steam">
@@ -665,6 +665,18 @@
             } catch (error) {
                 console.error('Failed to load app config:', error);
             }
+        }
+
+        // Single source for the game/content dropdown placeholder
+        function getSelectContentPlaceholder() {
+            const term = appConfig?.ui?.main?.content_term ?? 'game';
+            return `-- Select a ${term} --`;
+        }
+
+        // Single source for the dropdown search placeholder
+        function getSearchContentPlaceholder() {
+            const termPlural = appConfig?.ui?.main?.content_term_plural ?? 'games';
+            return `Search ${termPlural}...`;
         }
         
         // Generate sample questions HTML from config
@@ -1349,12 +1361,13 @@
                 const gameCountHome = document.getElementById('game-count-home');
                 
                 if (data.success && data.games.length > 0) {
+                    const selectPlaceholder = getSelectContentPlaceholder();
                     // Clear both dropdowns
-                    dropdown.innerHTML = '<option value="">-- Select a game --</option>';
+                    dropdown.innerHTML = `<option value="">${selectPlaceholder}</option>`;
                     optionsListDiv.innerHTML = '';
                     
                     // Update custom dropdown selected text
-                    selectedDiv.querySelector('.dropdown-text').textContent = '-- Select a game --';
+                    selectedDiv.querySelector('.dropdown-text').textContent = selectPlaceholder;
                     
                     // Hide clear button initially
                     const clearBtn = document.getElementById('dropdown-clear-btn');
@@ -1565,7 +1578,7 @@
             dropdown.value = '';
             
             // Reset custom dropdown display
-            dropdownText.textContent = '-- Select a game --';
+            dropdownText.textContent = getSelectContentPlaceholder();
             
             // Hide clear button
             clearBtn.classList.remove('show');
@@ -4064,6 +4077,8 @@
             populateSidebarHeader(); // Populate sidebar header icon and text
             populateSidebarPages(); // Populate sidebar page names and icons
             populatePageHeaders(); // Populate page titles, icons, and subtitles
+            const gameDropdownSearch = document.getElementById('game-dropdown-search');
+            if (gameDropdownSearch) gameDropdownSearch.placeholder = getSearchContentPlaceholder();
             populateSampleQuestions(); // Populate Genie sample questions
             populateButtonText(); // Populate button text from config
             populateFeatureCards(); // Populate feature cards on home page
