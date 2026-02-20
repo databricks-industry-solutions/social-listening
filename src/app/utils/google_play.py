@@ -18,7 +18,8 @@ class GooglePlayHelper:
         # that are None. Reason unknown, but this lookup dict will be used to fix some
         # cases manually.
         self.known_app_ids = {
-            "Brawl Stars": "com.supercell.brawlstars"
+            "Brawl Stars": "com.supercell.brawlstars",
+            "Diablo Immortal": "com.blizzard.diablo.immortal"
         }
 
     def get_app_info(self, appId: str) -> dict:
