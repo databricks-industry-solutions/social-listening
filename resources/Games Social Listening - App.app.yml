@@ -9,25 +9,25 @@ resources:
           sql_warehouse:
             id: ${var.warehouse_id}
             permission: CAN_USE
-        ## Add secrets to enable Reddit and Steam functionality
-        # - name: reddit_client_id
-        #   secret:
-        #     scope: social_listening_app
-        #     key: reddit_client_id
-        #     permission: READ
-        # - name: reddit_client_secret
-        #   secret:
-        #     scope: social_listening_app
-        #     key: reddit_client_secret
-        #     permission: READ
-        # - name: reddit_user_agent
-        #   secret:
-        #     scope: social_listening_app
-        #     key: reddit_user_agent
-        #     permission: READ
-        # - name: steam_api_key
-        #   secret:
-        #     scope: social_listening_app
-        #     key: steam_api_key
-        #     permission: READ
+        # Add secrets to enable Reddit and Steam functionality
+        - name: reddit_client_id
+          secret:
+            scope: social_listening_app
+            key: reddit_client_id
+            permission: READ
+        - name: reddit_client_secret
+          secret:
+            scope: social_listening_app
+            key: reddit_client_secret
+            permission: READ
+        - name: reddit_user_agent
+          secret:
+            scope: social_listening_app
+            key: reddit_user_agent
+            permission: READ
+        - name: steam_api_key
+          secret:
+            scope: social_listening_app
+            key: steam_api_key
+            permission: READ
 
