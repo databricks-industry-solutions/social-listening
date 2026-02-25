@@ -56,8 +56,11 @@ class RedditIngestor(DataIngestor):
         post_rows, comment_rows = self._get_content(subreddit_name=subreddit_name, max_posts=max_posts,
                                                     max_comments_per_post=max_comments_per_post)
         if len(post_rows) == 0:
-            # TODO: log warning here
-            print("No posts found.")
+            # Retry with all time filter
+            post_rows, comment_rows = self._get_content(
+                subreddit_name=subreddit_name, time_filter="all", max_posts=max_posts,
+                max_comments_per_post=max_comments_per_post)
+            print("Warning: No posts found in this subreddit.")
             return None
 
         # Define schemas
@@ -123,6 +126,8 @@ class RedditIngestor(DataIngestor):
 
         Note: currently always sorts by top for both posts and comments.
         Replies to comments are not extracted currently.
+
+        time_filter options: "all", "day", "hour", "month", "week", "year"
         """
         # Fetch top posts
         top_posts = self._reddit_client.subreddit(subreddit_name).top(time_filter=time_filter, limit=max_posts)
