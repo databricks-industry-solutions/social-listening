@@ -1867,11 +1867,14 @@
                 if (data.success && data.app_info) {
                     const info = data.app_info;
                     
+                    const steamStoreUrl = `https://store.steampowered.com/app/${appId}`;
                     // Build the HTML for game info display
                     gameInfoDiv.innerHTML = `
-                        <img src="${info.header_image_url}" alt="${appName}">
+                        <a href="${steamStoreUrl}" target="_blank">
+                            <img src="${info.header_image_url}" alt="${appName}">
+                        </a>
                         <h4>
-                            <a href="https://store.steampowered.com/app/${appId}" target="_blank">
+                            <a href="${steamStoreUrl}" target="_blank">
                                 ${appName}
                             </a>
                         </h4>
@@ -2107,11 +2110,14 @@
                 if (data.success && data.app_info) {
                     const info = data.app_info;
                     
+                    const storeUrl = info.store_url || '#';
                     // Build the HTML for game info display
                     gameInfoDiv.innerHTML = `
-                        <img src="${info.headerImage}" alt="${appName}">
+                        <a href="${storeUrl}" target="_blank">
+                            <img src="${info.headerImage}" alt="${appName}">
+                        </a>
                         <h4>
-                            <a href="${info.store_url}" target="_blank">
+                            <a href="${storeUrl}" target="_blank">
                                 ${info.title}
                             </a>
                         </h4>
@@ -2331,19 +2337,20 @@
                 if (data.success && data.subreddit_info) {
                     const info = data.subreddit_info;
                     
+                    const subredditUrl = `https://www.reddit.com${info.url}`;
                     // Build the HTML for subreddit info display
                     let iconHtml = '';
                     if (info.icon_image_url) {
-                        iconHtml = `<img src="${info.icon_image_url}" alt="r/${info.display_name}" style="width: 160px; height: 160px; border-radius: 50%; margin-bottom: 10px; object-fit: cover;">`;
+                        iconHtml = `<a href="${subredditUrl}" target="_blank"><img src="${info.icon_image_url}" alt="r/${info.display_name}" style="width: 160px; height: 160px; border-radius: 50%; margin-bottom: 10px; object-fit: cover;"></a>`;
                     } else {
                         // Placeholder for subreddits without icons
-                        iconHtml = `<div style="width: 160px; height: 160px; border-radius: 50%; margin: 0 auto 10px auto; background: #333; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 38px;">r/</div>`;
+                        iconHtml = `<a href="${subredditUrl}" target="_blank"><div style="width: 160px; height: 160px; border-radius: 50%; margin: 0 auto 10px auto; background: #333; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 38px;">r/</div></a>`;
                     }
                     
                     subredditInfoDiv.innerHTML = `
                         ${iconHtml}
                         <h4>
-                            <a href="https://www.reddit.com${info.url}" target="_blank">
+                            <a href="${subredditUrl}" target="_blank">
                                 r/${info.display_name}
                             </a>
                         </h4>
