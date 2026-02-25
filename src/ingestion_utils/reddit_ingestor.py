@@ -51,7 +51,9 @@ class RedditIngestor(DataIngestor):
                start_date: date = None, end_date: date = None) -> DataFrame:
         """
         Get reviews via Reddit API.
-        Currently, the output dataframe uses the subreddit name as the "game_name".
+        Currently:
+            - The output dataframe uses the subreddit name as the "game_name".
+            - "start_date" and "end_date" are not used.
         """
         post_rows, comment_rows = self._get_content(subreddit_name=subreddit_name, max_posts=max_posts,
                                                     max_comments_per_post=max_comments_per_post)
