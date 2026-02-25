@@ -1003,6 +1003,11 @@ textarea {
     margin: auto;
 }
 
+/* Green "Looking up..." state for manual app ID lookup */
+#google-play-manual-app-id-error.manual-lookup-loading {
+    color: #28a745;
+}
+
 .steam-info-loading {
     color: var(--color-primary);
     font-size: 1em;

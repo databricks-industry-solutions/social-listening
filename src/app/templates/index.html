@@ -2175,12 +2175,14 @@
             const manualAppId = (input.value || '').trim();
             errorDiv.style.display = 'none';
             errorDiv.textContent = '';
+            errorDiv.classList.remove('manual-lookup-loading');
             if (!manualAppId) {
                 errorDiv.textContent = 'Please enter an app ID.';
                 errorDiv.style.display = 'block';
                 return;
             }
             errorDiv.textContent = 'Looking up...';
+            errorDiv.classList.add('manual-lookup-loading');
             errorDiv.style.display = 'block';
             try {
                 const response = await fetch(`/api/google-play/app/${encodeURIComponent(manualAppId)}`);
@@ -2191,6 +2193,7 @@
                     const expectedTitle = expectedAppName; // (expectedAppName || '').trim();
                     const titlesMatch = retrievedTitle === expectedTitle; // retrievedTitle.toLowerCase() === expectedTitle.toLowerCase();
                     if (!titlesMatch) {
+                        errorDiv.classList.remove('manual-lookup-loading');
                         errorDiv.textContent = 'The retrieved app title (' + retrievedTitle + ') does not match the selected game (' + expectedTitle + '); check the app ID is for the correct game.';
                         errorDiv.style.display = 'block';
                         return;
@@ -2228,11 +2231,13 @@
                         option.textContent = info.title;
                     }
                 } else {
+                    errorDiv.classList.remove('manual-lookup-loading');
                     errorDiv.textContent = data.error || 'Failed to load app info.';
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
                 console.error('Error in manual Google Play app lookup:', err);
+                errorDiv.classList.remove('manual-lookup-loading');
                 errorDiv.textContent = err.message || 'Network or server error.';
                 errorDiv.style.display = 'block';
             }
