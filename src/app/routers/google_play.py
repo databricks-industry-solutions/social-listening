@@ -39,7 +39,8 @@ async def search_google_play_games(query: str = Query(..., min_length=1, descrip
         matches = google_play_helper.search_for_google_play_app(query.strip())
         
         logger.info(f"Found {len(matches)} matches for query: {query}")
-        
+        logger.info(f"First 5 matches: {matches[:5]}")
+
         return {
             'success': True,
             'matches': matches,
@@ -87,18 +88,34 @@ async def get_google_play_app_info(app_id: str, google_play_helper: GooglePlayHe
         
         if app_info_raw:
             # Extract and format the relevant fields
+            default_value = 'Unavailable (see store page above)'
             app_info = {
-                'headerImage': app_info_raw.get('headerImage', ''),
-                'title': app_info_raw.get('title', ''),
+                'headerImage': app_info_raw.get('headerImage', default_value),
+                'title': app_info_raw.get('title', default_value),
                 'appId': app_info_raw.get('appId', app_id),
-                'genre': app_info_raw.get('genre', 'Unknown'),
-                'released': app_info_raw.get('released', 'Unknown'),
-                'reviews': app_info_raw.get('reviews', 0),
-                'score': app_info_raw.get('score', 0.0),
+                'genre': app_info_raw.get('genre', default_value),
+                'released': app_info_raw.get('released', default_value),
+                'reviews': app_info_raw.get('reviews', default_value),
+                'score': app_info_raw.get('score', default_value),
                 'store_url': google_play_helper.get_store_page_url(app_id)
             }
+            # Extra catch for None entries
+            if app_info.get('headerImage') is None:
+                app_info['headerImage'] = default_value
+            if app_info.get('title') is None:
+                app_info['title'] = default_value
+            if app_info.get('appId') is None:
+                app_info['appId'] = app_id
+            if app_info.get('genre') is None:
+                app_info['genre'] = default_value
+            if app_info.get('released') is None:
+                app_info['released'] = default_value
+            if app_info.get('reviews') is None:
+                app_info['reviews'] = default_value
+            if app_info.get('score') is None:
+                app_info['score'] = default_value
             
-            logger.info(f"Successfully retrieved info for app_id: {app_id}")
+            logger.info(f"Successfully retrieved info for app_id: {app_id}: {app_info}")
             return {
                 'success': True,
                 'app_info': app_info,

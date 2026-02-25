@@ -1901,7 +1901,7 @@
             } catch (error) {
                 console.error('Error fetching Steam app info:', error);
                 gameInfoDiv.innerHTML = `
-                    <p class="steam-info-error">Error loading game information.</p>
+                    <p class="steam-info-error">Error loading game information. See logs for deetails.</p>
                     <p class="steam-info-error">${error.message}</p>
                 `;
                 addGameBtn.style.display = 'none';
@@ -2142,7 +2142,7 @@
                 console.error('Error loading Google Play game info:', error);
                 gameInfoDiv.innerHTML = `
                     <h4>${appName}</h4>
-                    <p class="steam-info-error">Error loading game information.</p>
+                    <p class="steam-info-error">Error loading game information. See logs for deetails.</p>
                 `;
                 addGameBtn.style.display = 'none';
             }
@@ -3980,9 +3980,9 @@
                 const iframes = document.querySelectorAll('iframe');
                 if (iframes.length > 0) {
                     iframeHasFocus = true;
-                    console.log('Focus moved away from main window (possibly to iframe) - Keyboard shortcuts may not work', {
-                        timestamp: new Date().toISOString()
-                    });
+                    // console.log('Focus moved away from main window (possibly to iframe) - Keyboard shortcuts may not work', {
+                    //     timestamp: new Date().toISOString()
+                    // });
                 }
             });
             
@@ -3990,9 +3990,9 @@
             window.addEventListener('focus', () => {
                 if (iframeHasFocus) {
                     iframeHasFocus = false;
-                    console.log('Focus returned to main window - Keyboard shortcuts active again', {
-                        timestamp: new Date().toISOString()
-                    });
+                    // console.log('Focus returned to main window - Keyboard shortcuts active again', {
+                    //     timestamp: new Date().toISOString()
+                    // });
                 }
             });
             
@@ -4049,9 +4049,9 @@
                 mainContent.addEventListener('click', (e) => {
                     // Only log if clicking outside of iframe
                     if (!e.target.closest('iframe')) {
-                        console.log('Clicked main content - Focus should return to main window', {
-                            timestamp: new Date().toISOString()
-                        });
+                        // console.log('Clicked main content - Focus should return to main window', {
+                        //     timestamp: new Date().toISOString()
+                        // });
                     }
                 });
             }

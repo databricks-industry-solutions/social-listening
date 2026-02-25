@@ -47,7 +47,7 @@ class GooglePlayHelper:
             search_term,
             lang="en",  # defaults to 'en'
             country="us",  # defaults to 'us'
-            n_hits=30  # defaults to 30 (= Google's maximum)
+            n_hits=30  # defaults to 30 (Google's maximum)
         )
 
         # Fix known app IDs that are None in the search results

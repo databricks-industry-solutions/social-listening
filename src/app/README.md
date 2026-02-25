@@ -112,6 +112,18 @@ Interface for Genie Space natural language queries.
 - **`google_play.py`**: Google Play reviews scraper (google-play-scraper)
 - **`reddit.py`**: Reddit PRAW client for subreddit posts
 
+## Running Locally
+
+You may also run the app locally by running the `main.py` file from this directory, e.g.:
+
+`python3 ./main.py`
+
+Make sure you have all the Python requirements satisfied, e.g. by using a `venv` and installing the packages from `requirements.txt`.
+
+Then, navigate to `localhost:8000` in your browser. The Databricks functionality (e.g. reading from Unity Catalog) won't work by default locally, but this can be helpful for quicker testing.
+
+Note that if you are using this for styling/theming testing you should use an incognito browser window or equivalent, to avoid the browser caching old styling.
+
 ## 📚 Additional Resources
 
 - [Databricks Apps Documentation](https://docs.databricks.com/en/dev-tools/databricks-apps/index.html)
