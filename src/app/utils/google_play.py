@@ -13,14 +13,7 @@ logger = logging.getLogger(__name__)
 
 class GooglePlayHelper:
     def __init__(self):
-        
-        # Sometimes the search results from GPS.search return items witn appIds
-        # that are None. Reason unknown, but this lookup dict will be used to fix some
-        # cases manually.
-        self.known_app_ids = {
-            "Brawl Stars": "com.supercell.brawlstars",
-            # "Diablo Immortal": "com.blizzard.diablo.immortal"
-        }
+        pass
 
     def get_app_info(self, appId: str) -> dict:
         """
@@ -49,12 +42,6 @@ class GooglePlayHelper:
             country="us",  # defaults to 'us'
             n_hits=30  # defaults to 30 (Google's maximum)
         )
-
-        # Fix known app IDs that are None in the search results
-        for result in search_results:
-            if result['appId'] is None:
-                if result['title'] in self.known_app_ids:
-                    result['appId'] = self.known_app_ids[result['title']]
         return search_results
 
     @staticmethod

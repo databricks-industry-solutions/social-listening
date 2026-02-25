@@ -39,7 +39,12 @@ async def search_google_play_games(query: str = Query(..., min_length=1, descrip
         matches = google_play_helper.search_for_google_play_app(query.strip())
         
         logger.info(f"Found {len(matches)} matches for query: {query}")
-        logger.info(f"First 5 matches: {matches[:5]}")
+        if matches:
+            logged_matches_limit = 5
+            if len(matches) >= logged_matches_limit:
+                logger.info(f"First {logged_matches_limit} matches: {matches[:logged_matches_limit]}")
+            else:
+                logger.info(f"All matches: {matches}")
 
         return {
             'success': True,
@@ -49,6 +54,17 @@ async def search_google_play_games(query: str = Query(..., min_length=1, descrip
             'error': None
         }
     except Exception as e:
+        # Catch TypeError: 'NoneType' object is not subscriptable (bug in Google Play Python API)
+        if isinstance(e, TypeError) and "'NoneType' object is not subscriptable" in str(e):
+            logger.info("No search results found.")
+            return {
+                'success': True,
+                'matches': [],
+                'count': 0,
+                'limit': 30,
+                'error': None
+            }
+        
         logger.error(f"Error searching Google Play: {str(e)}")
         return JSONResponse(
             status_code=500,
