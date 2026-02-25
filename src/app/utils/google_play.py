@@ -19,7 +19,7 @@ class GooglePlayHelper:
         # cases manually.
         self.known_app_ids = {
             "Brawl Stars": "com.supercell.brawlstars",
-            "Diablo Immortal": "com.blizzard.diablo.immortal"
+            # "Diablo Immortal": "com.blizzard.diablo.immortal"
         }
 
     def get_app_info(self, appId: str) -> dict:

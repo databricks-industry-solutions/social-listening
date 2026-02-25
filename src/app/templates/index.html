@@ -1870,9 +1870,11 @@
                     const steamStoreUrl = `https://store.steampowered.com/app/${appId}`;
                     // Build the HTML for game info display
                     gameInfoDiv.innerHTML = `
-                        <a href="${steamStoreUrl}" target="_blank">
-                            <img src="${info.header_image_url}" alt="${appName}">
-                        </a>
+                        <div class="steam-game-info-image-wrapper">
+                            <a href="${steamStoreUrl}" target="_blank" class="steam-game-info-image-link">
+                                <img src="${info.header_image_url}" alt="${appName}">
+                            </a>
+                        </div>
                         <h4>
                             <a href="${steamStoreUrl}" target="_blank">
                                 ${appName}
@@ -1904,7 +1906,7 @@
             } catch (error) {
                 console.error('Error fetching Steam app info:', error);
                 gameInfoDiv.innerHTML = `
-                    <p class="steam-info-error">Error loading game information. See logs for deetails.</p>
+                    <p class="steam-info-error">Error loading game information. See logs for details.</p>
                     <p class="steam-info-error">${error.message}</p>
                 `;
                 addGameBtn.style.display = 'none';
@@ -2113,9 +2115,11 @@
                     const storeUrl = info.store_url || '#';
                     // Build the HTML for game info display
                     gameInfoDiv.innerHTML = `
-                        <a href="${storeUrl}" target="_blank">
-                            <img src="${info.headerImage}" alt="${appName}">
-                        </a>
+                        <div class="steam-game-info-image-wrapper">
+                            <a href="${storeUrl}" target="_blank" class="steam-game-info-image-link">
+                                <img src="${info.headerImage}" alt="${appName}">
+                            </a>
+                        </div>
                         <h4>
                             <a href="${storeUrl}" target="_blank">
                                 ${info.title}
@@ -2133,13 +2137,21 @@
                     // Show the Add Game button
                     addGameBtn.style.display = 'flex';
                 } else {
-                    // No data available
+                    // No data available - show manual app ID input
+                    const escapedAppName = appName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     gameInfoDiv.innerHTML = `
                         <h4>${appName}</h4>
-                        <p class="steam-info-error">No data available via Google Play API for this game.</p>
-                        <p class="steam-info-error">Check if the store page is available.</p>
+                        <p class="steam-info-error">No data available via Google Play API for this game; check if the store page is available. (This is a known bug with the Google Play API.)</p>
+                        <p class="steam-info-error">If you know the game's app ID (can be found from the store page URL: <code>id=...</code>), enter it below to retry.</p>
+                        <div class="google-play-manual-app-id" style="margin-top: 12px; text-align: left;">
+                            <label for="google-play-manual-app-id-input" style="display: block; color: #b0b0b0; margin-bottom: 6px;">App ID</label>
+                            <div class="search-input-wrapper">
+                                <input type="text" id="google-play-manual-app-id-input" placeholder="e.g. com.nianticlabs.pokemongo" onkeypress="if(event.key==='Enter') { event.preventDefault(); handleGooglePlayManualAppIdLookup('${escapedAppName}'); }">
+                                <button type="button" class="inline-search-btn" id="google-play-manual-lookup-btn" onclick="handleGooglePlayManualAppIdLookup('${escapedAppName}')">›</button>
+                            </div>
+                            <div id="google-play-manual-app-id-error" class="steam-info-error" style="margin-top: 8px; display: none;"></div>
+                        </div>
                     `;
-                    
                     // Hide the Add Game button if no data
                     addGameBtn.style.display = 'none';
                 }
@@ -2148,9 +2160,81 @@
                 console.error('Error loading Google Play game info:', error);
                 gameInfoDiv.innerHTML = `
                     <h4>${appName}</h4>
-                    <p class="steam-info-error">Error loading game information. See logs for deetails.</p>
+                    <p class="steam-info-error">Error loading game information. See logs for details.</p>
                 `;
                 addGameBtn.style.display = 'none';
+            }
+        }
+        
+        async function handleGooglePlayManualAppIdLookup(expectedAppName) {
+            const input = document.getElementById('google-play-manual-app-id-input');
+            const errorDiv = document.getElementById('google-play-manual-app-id-error');
+            const gameInfoDiv = document.getElementById('google-play-game-info');
+            const addGameBtn = document.getElementById('google-play-add-game-btn');
+            if (!input || !errorDiv || !gameInfoDiv || !addGameBtn) return;
+            const manualAppId = (input.value || '').trim();
+            errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
+            if (!manualAppId) {
+                errorDiv.textContent = 'Please enter an app ID.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            errorDiv.textContent = 'Looking up...';
+            errorDiv.style.display = 'block';
+            try {
+                const response = await fetch(`/api/google-play/app/${encodeURIComponent(manualAppId)}`);
+                const data = await response.json();
+                if (data.success && data.app_info) {
+                    const info = data.app_info;
+                    const retrievedTitle = (info.title || '').trim();
+                    const expectedTitle = expectedAppName; // (expectedAppName || '').trim();
+                    const titlesMatch = retrievedTitle === expectedTitle; // retrievedTitle.toLowerCase() === expectedTitle.toLowerCase();
+                    if (!titlesMatch) {
+                        errorDiv.textContent = 'The retrieved app title (' + retrievedTitle + ') does not match the selected game (' + expectedTitle + '); check the app ID is for the correct game.';
+                        errorDiv.style.display = 'block';
+                        return;
+                    }
+                    addGameBtn.dataset.appId = info.appId || manualAppId;
+                    addGameBtn.dataset.appName = info.title;
+                    const storeUrl = info.store_url || '#';
+                    gameInfoDiv.innerHTML = `
+                        <div class="steam-game-info-image-wrapper">
+                            <a href="${storeUrl}" target="_blank" class="steam-game-info-image-link">
+                                <img src="${info.headerImage}" alt="${info.title}">
+                            </a>
+                        </div>
+                        <h4>
+                            <a href="${storeUrl}" target="_blank">
+                                ${info.title}
+                            </a>
+                        </h4>
+                        <div class="steam-game-info-content">
+                            <p><strong>App ID:</strong> ${info.appId}</p>
+                            <p><strong>Genre:</strong> ${info.genre}</p>
+                            <p><strong>Released:</strong> ${info.released}</p>
+                            <p><strong>Reviews:</strong> ${info.reviews.toLocaleString()}</p>
+                            <p><strong>Score:</strong> ${info.score}</p>
+                        </div>
+                    `;
+                    addGameBtn.style.display = 'flex';
+                    errorDiv.style.display = 'none';
+                    // Update the search results select so the selected option has the correct app ID
+                    const resultsSelect = document.getElementById('google-play-results-select');
+                    const selectedIndex = resultsSelect && resultsSelect.selectedIndex;
+                    if (resultsSelect && selectedIndex >= 0 && resultsSelect.options[selectedIndex]) {
+                        const option = resultsSelect.options[selectedIndex];
+                        option.value = JSON.stringify({ appId: info.appId || manualAppId, title: info.title });
+                        option.textContent = info.title;
+                    }
+                } else {
+                    errorDiv.textContent = data.error || 'Failed to load app info.';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                console.error('Error in manual Google Play app lookup:', err);
+                errorDiv.textContent = err.message || 'Network or server error.';
+                errorDiv.style.display = 'block';
             }
         }
         

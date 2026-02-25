@@ -801,6 +801,13 @@ textarea {
     padding-right: 50px;
 }
 
+/* Manual app ID lookup input inside dark game-info panel */
+.steam-game-info .search-input-wrapper input {
+    background: #2a2a2a;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
 .inline-search-btn {
     position: absolute;
     right: 8px;
@@ -945,6 +952,10 @@ textarea {
     justify-content: flex-start;
     overflow-y: auto;
     box-sizing: border-box;
+}
+
+.steam-game-info-image-link:hover {
+    opacity: 0.9;
 }
 
 .steam-game-info img {
