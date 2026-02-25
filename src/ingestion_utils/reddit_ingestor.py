@@ -62,8 +62,9 @@ class RedditIngestor(DataIngestor):
             post_rows, comment_rows = self._get_content(
                 subreddit_name=subreddit_name, time_filter="all", max_posts=max_posts,
                 max_comments_per_post=max_comments_per_post)
-            print("Warning: No posts found in this subreddit.")
-            return None
+            if len(post_rows) == 0:
+                print("Warning: No posts found in this subreddit.")
+                return None
 
         # Define schemas
         post_schema = StructType([

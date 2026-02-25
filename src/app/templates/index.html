@@ -2430,10 +2430,10 @@
                     // Build the HTML for subreddit info display
                     let iconHtml = '';
                     if (info.icon_image_url) {
-                        iconHtml = `<a href="${subredditUrl}" target="_blank"><img src="${info.icon_image_url}" alt="r/${info.display_name}" style="width: 160px; height: 160px; border-radius: 50%; margin-bottom: 10px; object-fit: cover;"></a>`;
+                        iconHtml = `<a href="${subredditUrl}" target="_blank" class="steam-game-info-image-link"><img src="${info.icon_image_url}" alt="r/${info.display_name}" style="width: 160px; height: 160px; border-radius: 50%; margin-bottom: 10px; object-fit: cover;"></a>`;
                     } else {
                         // Placeholder for subreddits without icons
-                        iconHtml = `<a href="${subredditUrl}" target="_blank"><div style="width: 160px; height: 160px; border-radius: 50%; margin: 0 auto 10px auto; background: #333; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 38px;">r/</div></a>`;
+                        iconHtml = `<a href="${subredditUrl}" target="_blank" class="steam-game-info-image-link"><div style="width: 160px; height: 160px; border-radius: 50%; margin: 0 auto 10px auto; background: #333; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 38px;">r/</div></a>`;
                     }
                     
                     subredditInfoDiv.innerHTML = `
