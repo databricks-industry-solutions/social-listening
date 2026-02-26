@@ -60,6 +60,10 @@
                     <span class="nav-section-title">AI and Analytics</span>
                 </div>
                 <div class="nav-section-items">
+                    <div class="nav-item" data-tab="dashboard" data-page-key="dashboard">
+                        <span class="nav-item-icon"><img src="" alt="Dashboard"></span>
+                        <span class="nav-item-text"></span>
+                    </div>
                     <div class="nav-item" data-tab="report" data-page-key="report">
                         <span class="nav-item-icon"><img src="" alt="Report"></span>
                         <span class="nav-item-text"></span>
@@ -417,6 +421,34 @@
             </div>
         </div>
 
+        <!-- Dashboard Tab -->
+        <div class="content-container tab-content" id="dashboard" data-page-key="dashboard">
+            <h1 id="dashboard-title"><img src="" alt="" class="page-title-icon page-title-icon-dynamic"> <span class="page-title-text"></span></h1>
+            <p class="subtitle page-subtitle" style="display: none;"></p>
+            
+            <!-- Embedded Dashboard (always visible) -->
+            <div style="margin-top: 20px;">
+                <div style="background: #2d2d2d; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);">
+                    <h3 style="color: #ffffff; margin-top: 0; margin-bottom: 20px; font-size: 1.3em;">
+                        <span style="display: inline-block; background: white; padding: 2px; border-radius: 8px; vertical-align: middle; margin-right: 15px;">
+                            <img src="/assets/databricks/primary-icon-orange-analytics-on-your-data-lakes.svg" alt="Dashboard" style="width: 32px; height: 32px; display: block;">
+                        </span>Dashboard
+                    </h3>
+                    <iframe
+                        id="dashboard-tab-iframe"
+                        class="dashboard-iframe"
+                        src=""
+                        width="100%"
+                        height="800"
+                        frameborder="0"
+                        style="border-radius: 8px; overflow: auto;"
+                        display="block"
+                        tabindex="-1">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
         <!-- Report Tab -->
         <div class="content-container tab-content" id="report" data-page-key="report">
             <h1 id="report-title"><img src="" alt="" class="page-title-icon page-title-icon-dynamic"> <span class="page-title-text">Report (No Selection)</span></h1>
@@ -569,7 +601,7 @@
                         <iframe
                             id="dashboard-iframe"
                             class="dashboard-iframe"
-                            src="https://e2-demo-field-eng.cloud.databricks.com/embed/dashboardsv3/01f0a080cf061122a0a6f83821145809?o=1444828305810485"
+                            src="..."
                             width="100%"
                             height="800"
                             frameborder="0"
@@ -632,7 +664,7 @@
                     <iframe
                         id="dev-testing-dashboard-iframe"
                         class="dashboard-iframe"
-                        src="https://e2-demo-field-eng.cloud.databricks.com/embed/dashboardsv3/01f0a080cf061122a0a6f83821145809?o=1444828305810485"
+                        src="..."
                         width="100%"
                         height="800"
                         frameborder="0"
@@ -1010,7 +1042,8 @@
             const sectionMap = {
                 'choose-game': 0,  // First nav-section (Get Data)
                 'add-game': 0,
-                'report': 1,       // Second nav-section (AI and Analytics)
+                'dashboard': 1,    // Second nav-section (AI and Analytics)
+                'report': 1,
                 'dive-deeper': 1
             };
             
@@ -1104,14 +1137,13 @@
         });
         
         // Update report title based on selected game
-        // Update dashboard URL based on selected game
+        // Update dashboard URL based on selected game (updates both Report and Dashboard tab iframes)
         async function updateDashboardUrl(gameName) {
             const dashboardIframe = document.getElementById('dashboard-iframe');
+            const dashboardTabIframe = document.getElementById('dashboard-tab-iframe');
+            const iframes = [dashboardIframe, dashboardTabIframe].filter(Boolean);
             
-            if (!dashboardIframe) {
-                console.error('Dashboard iframe not found');
-                return;
-            }
+            if (iframes.length === 0) return;
             
             try {
                 const endpoint = gameName 
@@ -1122,7 +1154,7 @@
                 const data = await response.json();
                 
                 if (data.success && data.dashboard_url) {
-                    dashboardIframe.src = data.dashboard_url;
+                    iframes.forEach(iframe => { iframe.src = data.dashboard_url; });
                     console.log(`Dashboard URL updated for game: ${gameName || 'none'}`);
                 } else {
                     console.error('Failed to get dashboard URL:', data.error);

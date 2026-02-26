@@ -54,6 +54,9 @@ ui:
         icon: "/assets/databricks/primary-icon-orange-business-value.svg"
         subtitle: "Choose a source to add a new property or new content."
         tile_description: "Add new titles and content" # For tiles such as on the Home page/tab.
+      dashboard:
+        display_name: "Dashboard"
+        icon: "/assets/databricks/primary-icon-orange-analytics-on-your-data-lakes.svg"
       report:
         display_name: "Report"
         icon: "/assets/databricks/primary-icon-orange-dashboards.svg"

@@ -46,8 +46,9 @@ body {
     margin: auto 0;
 }
 
-/* Wider container for Report page */
-#report {
+/* Wider container for Report and Dashboard pages */
+#report,
+#dashboard {
     width: 100%;
     max-width: 1400px;
 }
