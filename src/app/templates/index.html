@@ -164,7 +164,7 @@
                 <p><strong>Content Type:</strong> <span id="selected-game-content-type"></span></p>
             </div>
             
-            <button class="btn" id="view-dashboard-btn" style="display: none; margin-top: 20px;" onclick="navigateToTab('dashboard')">
+            <button class="btn" id="choose-game-view-dashboard-btn" style="display: none; margin-top: 20px;" onclick="navigateToTab('dashboard')">
                 View Dashboard
             </button>
         </div>
@@ -1683,7 +1683,7 @@
             const selectedGameName = document.getElementById('selected-game-name');
             const selectedGameContentType = document.getElementById('selected-game-content-type');
             const reportTitle = document.getElementById('report-title');
-            const viewDashboardBtn = document.getElementById('view-dashboard-btn');
+            const chooseGameViewDashboardBtn = document.getElementById('choose-game-view-dashboard-btn');
             const clearBtn = document.getElementById('dropdown-clear-btn');
             
             // Clear tracking variables to force reload on next Report tab visit
@@ -1700,14 +1700,14 @@
                 selectedGameName.textContent = selectedGame;
                 selectedGameContentType.textContent = contentType;
                 selectedGameDiv.classList.add('show');
-                viewDashboardBtn.style.display = 'block';
+                if (chooseGameViewDashboardBtn) chooseGameViewDashboardBtn.style.display = 'block';
                 // Update report title with selected game
                 reportTitle.innerHTML = `${iconHtml} Report: ${selectedGame}`;
                 // Show clear button
                 clearBtn.classList.add('show');
             } else {
                 selectedGameDiv.classList.remove('show');
-                viewDashboardBtn.style.display = 'none';
+                if (chooseGameViewDashboardBtn) chooseGameViewDashboardBtn.style.display = 'none';
                 // Reset report title to default
                 reportTitle.innerHTML = `${iconHtml} Report (No Selection)`;
                 // Hide clear button
