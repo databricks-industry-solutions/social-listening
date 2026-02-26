@@ -164,8 +164,8 @@
                 <p><strong>Content Type:</strong> <span id="selected-game-content-type"></span></p>
             </div>
             
-            <button class="btn" id="view-report-btn" style="display: none; margin-top: 20px;" onclick="navigateToTab('report')">
-                View Report
+            <button class="btn" id="view-dashboard-btn" style="display: none; margin-top: 20px;" onclick="navigateToTab('dashboard')">
+                View Dashboard
             </button>
         </div>
 
@@ -426,25 +426,41 @@
             <h1 id="dashboard-title"><img src="" alt="" class="page-title-icon page-title-icon-dynamic"> <span class="page-title-text"></span></h1>
             <p class="subtitle page-subtitle" style="display: none;"></p>
             
-            <!-- Embedded Dashboard (always visible) -->
-            <div style="margin-top: 20px;">
-                <div style="background: #2d2d2d; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);">
-                    <h3 style="color: #ffffff; margin-top: 0; margin-bottom: 20px; font-size: 1.3em;">
-                        <span style="display: inline-block; background: white; padding: 2px; border-radius: 8px; vertical-align: middle; margin-right: 15px;">
-                            <img src="/assets/databricks/primary-icon-orange-analytics-on-your-data-lakes.svg" alt="Dashboard" style="width: 32px; height: 32px; display: block;">
-                        </span>Dashboard
-                    </h3>
-                    <iframe
-                        id="dashboard-tab-iframe"
-                        class="dashboard-iframe"
-                        src=""
-                        width="100%"
-                        height="800"
-                        frameborder="0"
-                        style="border-radius: 8px; overflow: auto;"
-                        display="block"
-                        tabindex="-1">
-                    </iframe>
+            <!-- No Game Selected Section -->
+            <div id="dashboard-no-game-section">
+                <div class="info-box" style="margin-top: 30px;">
+                    <p><strong>No Selection</strong></p>
+                    <p>Please first make a selection to view its dashboard.</p>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button class="btn" id="dashboard-choose-game-btn" onclick="navigateToTab('choose-game')"></button>
+                </div>
+            </div>
+            
+            <!-- Game Selected Content (embedded dashboard) -->
+            <div id="dashboard-game-content" style="display: none;">
+                <div style="margin-top: 20px;">
+                    <div style="background: #2d2d2d; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);">
+                        <h3 style="color: #ffffff; margin-top: 0; margin-bottom: 20px; font-size: 1.3em;">
+                            <span style="display: inline-block; background: white; padding: 2px; border-radius: 8px; vertical-align: middle; margin-right: 15px;">
+                                <img src="/assets/databricks/primary-icon-orange-analytics-on-your-data-lakes.svg" alt="Dashboard" style="width: 32px; height: 32px; display: block;">
+                            </span>Dashboard
+                        </h3>
+                        <iframe
+                            id="dashboard-tab-iframe"
+                            class="dashboard-iframe"
+                            src=""
+                            width="100%"
+                            height="800"
+                            frameborder="0"
+                            style="border-radius: 8px; overflow: auto;"
+                            display="block"
+                            tabindex="-1">
+                        </iframe>
+                    </div>
+                </div>
+                <div style="margin-top: 30px;">
+                    <button class="btn" id="dashboard-view-report-btn" onclick="navigateToTab('report')">View Report</button>
                 </div>
             </div>
         </div>
@@ -664,7 +680,7 @@
                     <iframe
                         id="dev-testing-dashboard-iframe"
                         class="dashboard-iframe"
-                        src="..."
+                        src=""
                         width="100%"
                         height="800"
                         frameborder="0"
@@ -820,11 +836,10 @@
             
             // Populate "Choose Game" button text in Report no-game section
             const reportChooseGameBtn = document.getElementById('report-choose-game-btn');
-            if (reportChooseGameBtn && pages.choose_game && pages.choose_game.display_name) {
-                reportChooseGameBtn.textContent = pages.choose_game.display_name;
-            } else if (reportChooseGameBtn) {
-                reportChooseGameBtn.textContent = 'Choose Game'; // Fallback
-            }
+            const dashboardChooseGameBtn = document.getElementById('dashboard-choose-game-btn');
+            const chooseGameLabel = pages.choose_game && pages.choose_game.display_name ? pages.choose_game.display_name : 'Choose Game';
+            if (reportChooseGameBtn) reportChooseGameBtn.textContent = chooseGameLabel;
+            if (dashboardChooseGameBtn) dashboardChooseGameBtn.textContent = chooseGameLabel;
             
             console.log('Button text populated from config');
         }
@@ -1172,7 +1187,7 @@
             const selectedGame = selectedValue ? (gameDropdown.options[gameDropdown.selectedIndex]?.dataset.gameName || selectedValue.split('|||')[0]) : '';
             const noGameSection = document.getElementById('report-no-game-section');
             const gameContent = document.getElementById('report-game-content');
-            const viewReportBtn = document.getElementById('view-report-btn');
+            const viewDashboardBtn = document.getElementById('view-dashboard-btn');
             
             // Get report page config for icon and display name
             let iconPath = '/assets/databricks/primary-icon-orange-dashboards.svg';
@@ -1191,9 +1206,9 @@
                 // Show game content, hide no game section
                 noGameSection.style.display = 'none';
                 gameContent.style.display = 'block';
-                // Show view report button on Choose Game page
-                if (viewReportBtn) {
-                    viewReportBtn.style.display = 'block';
+                // Show View Dashboard button on Choose Game page
+                if (viewDashboardBtn) {
+                    viewDashboardBtn.style.display = 'block';
                 }
                 // Load personas for the selected game
                 loadPersonas(selectedGame);
@@ -1204,14 +1219,40 @@
                 // Show no game section, hide game content
                 noGameSection.style.display = 'block';
                 gameContent.style.display = 'none';
-                // Hide view report button on Choose Game page
-                if (viewReportBtn) {
-                    viewReportBtn.style.display = 'none';
+                // Hide View Dashboard button on Choose Game page
+                if (viewDashboardBtn) {
+                    viewDashboardBtn.style.display = 'none';
                 }
                 // Clear personas
                 loadPersonas(null);
                 // Reset dashboard URL to base (no filter)
                 updateDashboardUrl(null);
+            }
+            // Keep Dashboard page title in sync (Dashboard: GameName or Dashboard (No Selection))
+            updateDashboardTitle(selectedGame);
+        }
+        
+        function updateDashboardTitle(selectedGame) {
+            const dashboardTitle = document.getElementById('dashboard-title');
+            const noGameSection = document.getElementById('dashboard-no-game-section');
+            const gameContent = document.getElementById('dashboard-game-content');
+            if (!dashboardTitle) return;
+            let iconPath = '/assets/databricks/primary-icon-orange-analytics-on-your-data-lakes.svg';
+            let displayName = 'Dashboard';
+            if (appConfig && appConfig.ui && appConfig.ui.sidebar && appConfig.ui.sidebar.pages && appConfig.ui.sidebar.pages.dashboard) {
+                const dashboardConfig = appConfig.ui.sidebar.pages.dashboard;
+                if (dashboardConfig.icon) iconPath = dashboardConfig.icon;
+                if (dashboardConfig.display_name) displayName = dashboardConfig.display_name;
+            }
+            const iconHtml = `<img src="${iconPath}" alt="${displayName}" class="page-title-icon page-title-icon-dynamic">`;
+            if (selectedGame) {
+                dashboardTitle.innerHTML = `${iconHtml} <span class="page-title-text">${displayName}: ${selectedGame}</span>`;
+                if (noGameSection) noGameSection.style.display = 'none';
+                if (gameContent) gameContent.style.display = 'block';
+            } else {
+                dashboardTitle.innerHTML = `${iconHtml} <span class="page-title-text">${displayName} (No Selection)</span>`;
+                if (noGameSection) noGameSection.style.display = 'block';
+                if (gameContent) gameContent.style.display = 'none';
             }
         }
         
@@ -1635,7 +1676,7 @@
             const selectedGameName = document.getElementById('selected-game-name');
             const selectedGameContentType = document.getElementById('selected-game-content-type');
             const reportTitle = document.getElementById('report-title');
-            const viewReportBtn = document.getElementById('view-report-btn');
+            const viewDashboardBtn = document.getElementById('view-dashboard-btn');
             const clearBtn = document.getElementById('dropdown-clear-btn');
             
             // Clear tracking variables to force reload on next Report tab visit
@@ -1652,14 +1693,14 @@
                 selectedGameName.textContent = selectedGame;
                 selectedGameContentType.textContent = contentType;
                 selectedGameDiv.classList.add('show');
-                viewReportBtn.style.display = 'block';
+                viewDashboardBtn.style.display = 'block';
                 // Update report title with selected game
                 reportTitle.innerHTML = `${iconHtml} Report: ${selectedGame}`;
                 // Show clear button
                 clearBtn.classList.add('show');
             } else {
                 selectedGameDiv.classList.remove('show');
-                viewReportBtn.style.display = 'none';
+                viewDashboardBtn.style.display = 'none';
                 // Reset report title to default
                 reportTitle.innerHTML = `${iconHtml} Report (No Selection)`;
                 // Hide clear button
