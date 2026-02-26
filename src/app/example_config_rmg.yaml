@@ -64,6 +64,9 @@ ui:
         display_name: "Dive Deeper"
         icon: "/assets/databricks/primary-icon-orange-magnify-analytics.svg"
         subtitle: "Explore detailed analytics and insights."
+      credentials:
+        display_name: "Credentials"
+        icon: "/assets/databricks/primary-icon-orange-built-in-functions.svg"
     # To have no links at the bottom of the sidebar, remove/comment this entire links_section section.
     link_sections:
       # The bottom part of the sidebar will render links/sections dynamically based

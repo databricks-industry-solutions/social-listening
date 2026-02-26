@@ -74,6 +74,21 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Settings Section (collapsed by default) -->
+            <div class="nav-section collapsed">
+                <div class="nav-section-header" onclick="toggleNavSection(this)">
+                    <span class="nav-section-icon collapse-arrow">▼</span>
+                    <span class="nav-section-main-icon"><img src="/assets/databricks/primary-icon-white-built-in-functions.svg" alt="Settings"></span>
+                    <span class="nav-section-title">Settings</span>
+                </div>
+                <div class="nav-section-items">
+                    <div class="nav-item" data-tab="credentials" data-page-key="credentials">
+                        <span class="nav-item-icon"><img src="" alt="Credentials"></span>
+                        <span class="nav-item-text"></span>
+                    </div>
+                </div>
+            </div>
         </nav>
         
         <!-- SIDEBAR_LINKS_PLACEHOLDER -->
@@ -653,6 +668,59 @@
             </div>            
         </div>
 
+        <!-- Credentials Tab -->
+        <div class="content-container tab-content" id="credentials" data-page-key="credentials">
+            <h1><img src="" alt="" class="page-title-icon page-title-icon-dynamic"> <span class="page-title-text"></span></h1>
+            <p class="subtitle page-subtitle" style="display: none;"></p>
+            <p style="margin-top: 6px; margin-bottom: 0; color: #666;">Add, update, or test API credentials for each platform.</p>
+            <div class="credentials-collapsible-wrapper" style="margin-top: 24px;">
+                <div class="credentials-collapsible collapsed" id="credentials-steam-section">
+                    <div class="credentials-collapsible-header" onclick="toggleCredentialsSection(this)">
+                        <span class="credentials-collapsible-arrow">▼</span>
+                        <img src="/assets/steam/Steam_icon_logo.svg" alt="Steam" class="credentials-collapsible-icon">
+                        <span class="credentials-collapsible-title">Steam</span>
+                        <span class="credentials-collapsible-placeholder">Not configured</span>
+                        <button type="button" class="credentials-retest-btn" onclick="event.stopPropagation(); handleCredentialsRetest('steam')">Re-Test</button>
+                    </div>
+                    <div class="credentials-collapsible-content">
+                        <p class="credentials-collapsible-content-text">Add/Update Steam API credentials for ingestion.</p>
+                        <label class="credentials-input-label" for="credentials-steam-input">API Key</label>
+                        <div class="search-input-wrapper credentials-input-wrapper" style="margin-top: 6px;">
+                            <input type="text" id="credentials-steam-input" placeholder="e.g. 'A123B456C...'" class="credentials-text-input">
+                            <button type="button" class="inline-search-btn" id="credentials-steam-btn">›</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="credentials-collapsible collapsed" id="credentials-reddit-section">
+                    <div class="credentials-collapsible-header" onclick="toggleCredentialsSection(this)">
+                        <span class="credentials-collapsible-arrow">▼</span>
+                        <img src="/assets/reddit/Reddit_Logo.webp" alt="Reddit" class="credentials-collapsible-icon">
+                        <span class="credentials-collapsible-title">Reddit</span>
+                        <span class="credentials-collapsible-placeholder">Not configured</span>
+                        <button type="button" class="credentials-retest-btn" onclick="event.stopPropagation(); handleCredentialsRetest('reddit')">Re-Test</button>
+                    </div>
+                    <div class="credentials-collapsible-content">
+                        <p class="credentials-collapsible-content-text">Add/Update Reddit API credentials for ingestion.</p>
+                        <label class="credentials-input-label" for="credentials-reddit-input">Client ID</label>
+                        <div class="search-input-wrapper credentials-input-wrapper" style="margin-top: 6px;">
+                            <input type="text" id="credentials-reddit-input" placeholder="e.g. 'A_BCdef...'" class="credentials-text-input">
+                            <button type="button" class="inline-search-btn" id="credentials-reddit-btn">›</button>
+                        </div>
+                        <label class="credentials-input-label" for="credentials-reddit-client-secret-input">Client Secret</label>
+                        <div class="search-input-wrapper credentials-input-wrapper" style="margin-top: 6px;">
+                            <input type="text" id="credentials-reddit-client-secret-input" placeholder="e.g. '1ABCdef-1ABC...'" class="credentials-text-input">
+                            <button type="button" class="inline-search-btn" id="credentials-reddit-client-secret-btn">›</button>
+                        </div>
+                        <label class="credentials-input-label" for="credentials-reddit-user-agent-input">User Agent</label>
+                        <div class="search-input-wrapper credentials-input-wrapper" style="margin-top: 6px;">
+                            <input type="text" id="credentials-reddit-user-agent-input" placeholder="e.g. 'abc:def:v0.1 (by u/user)'" class="credentials-text-input">
+                            <button type="button" class="inline-search-btn" id="credentials-reddit-user-agent-btn">›</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Dev Testing Tab (conditionally rendered) -->
         <div class="content-container tab-content" id="dev-testing">
             <h1><img src="/assets/databricks/primary-icon-orange-botnet.svg" alt="Dev Testing" class="page-title-icon"> Dev Testing</h1>
@@ -993,6 +1061,17 @@
             section.classList.toggle('collapsed');
         }
         
+        function toggleCredentialsSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('collapsed');
+        }
+
+        function handleCredentialsRetest(source) {
+            // Re-test credentials for the given source ('steam' or 'reddit').
+            // Can be wired to e.g. POST /api/credentials/test?source=...
+            console.log('Re-Test credentials:', source);
+        }
+        
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const toggleBtn = document.getElementById('toggleBtn');
@@ -1062,7 +1141,8 @@
                 'add-game': 0,
                 'dashboard': 1,    // Second nav-section (AI and Analytics)
                 'report': 1,
-                'dive-deeper': 1
+                'dive-deeper': 1,
+                'credentials': 2   // Third nav-section (Settings)
             };
             
             // Only expand sections for tabs that are in collapsible sections

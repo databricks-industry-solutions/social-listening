@@ -1170,3 +1170,166 @@ textarea {
     padding-top: 20px !important;
     border-top: 2px solid #ddd !important;
 }
+
+/* Credentials page collapsible sections (dark theme) */
+.credentials-collapsible-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.credentials-collapsible {
+    border: 1px solid #404040;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #2d2d2d;
+}
+
+.credentials-collapsible-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 14px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #e0e0e0;
+    transition: background 0.2s ease;
+}
+
+.credentials-collapsible-header:hover {
+    background: #383838;
+}
+
+.credentials-collapsible-arrow {
+    font-size: 0.85em;
+    transition: transform 0.25s ease;
+    color: #b0b0b0;
+}
+
+.credentials-collapsible.collapsed .credentials-collapsible-arrow {
+    transform: rotate(-90deg);
+}
+
+.credentials-collapsible-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.credentials-collapsible-title {
+    flex: 1;
+    font-size: 1.2em;
+}
+
+.credentials-collapsible-placeholder {
+    font-size: 1.05em;
+    font-weight: 500;
+    color: #d4a017;
+    margin-left: auto;
+}
+
+.credentials-retest-btn {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    border: 1px solid var(--color-primary);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.credentials-retest-btn:hover {
+    box-shadow: 0 2px 8px rgba(var(--color-dark-accent-primary-rgb), 0.4);
+}
+
+.credentials-retest-btn:active {
+    background: linear-gradient(135deg, var(--color-muted-primary) 0%, var(--color-muted-secondary) 100%);
+    border-color: var(--color-muted-primary);
+}
+
+.credentials-collapsible-content {
+    overflow: hidden;
+    max-height: 280px;
+    border-top: 1px solid #404040;
+    background: #1a1a1a;
+    padding: 14px;
+    transition: max-height 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.credentials-collapsible.collapsed .credentials-collapsible-content {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-top-width: 0;
+}
+
+.credentials-collapsible-content-text {
+    color: #b0b0b0;
+    margin: 0;
+}
+
+/* Label above credentials inputs */
+.credentials-input-label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 0;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #b0b0b0;
+}
+
+.credentials-collapsible-content .credentials-input-label:first-of-type {
+    margin-top: 24px;
+}
+
+/* Text input with > button inside credentials sections (dark theme) */
+.credentials-collapsible-content .credentials-input-wrapper {
+    width: 100%;
+}
+
+.credentials-collapsible-content .credentials-input-wrapper:last-of-type {
+    margin-bottom: 20px;
+}
+
+.credentials-collapsible-content .credentials-text-input {
+    width: 100%;
+    padding: 10px 42px 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #404040;
+    background: #2a2a2a;
+    color: #e0e0e0;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+/* Smaller > button with consistent margin inside credentials inputs */
+.credentials-collapsible-content .inline-search-btn {
+    width: 28px;
+    height: 28px;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1em;
+    border-radius: 5px;
+}
+
+.credentials-collapsible-content .inline-search-btn:hover {
+    transform: translateY(-50%) scale(1.05);
+}
+
+.credentials-collapsible-content .inline-search-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.credentials-collapsible-content .credentials-text-input::placeholder {
+    color: #808080;
+}
+
+.credentials-collapsible-content .credentials-text-input:focus {
+    outline: none;
+    border-color: #606060;
+}
