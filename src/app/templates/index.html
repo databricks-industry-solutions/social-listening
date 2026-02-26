@@ -1032,6 +1032,9 @@
                     window.lastReportGame = currentGame;
                 }
             }
+            if (tabId === 'dashboard') {
+                updateDashboardTitle();
+            }
             
             // Expand the section containing the active tab
             expandSectionForTab(tabId);
@@ -1134,6 +1137,9 @@
                 if (tabId === 'report') {
                     updateReportTitle();
                 }
+                if (tabId === 'dashboard') {
+                    updateDashboardTitle();
+                }
                 
                 // Expand the section containing the active tab
                 expandSectionForTab(tabId);
@@ -1228,11 +1234,12 @@
                 // Reset dashboard URL to base (no filter)
                 updateDashboardUrl(null);
             }
-            // Keep Dashboard page title in sync (Dashboard: GameName or Dashboard (No Selection))
-            updateDashboardTitle(selectedGame);
         }
         
-        function updateDashboardTitle(selectedGame) {
+        function updateDashboardTitle() {
+            const gameDropdown = document.getElementById('game-dropdown');
+            const selectedValue = gameDropdown ? gameDropdown.value : '';
+            const selectedGame = selectedValue ? (gameDropdown.options[gameDropdown.selectedIndex]?.dataset.gameName || selectedValue.split('|||')[0]) : '';
             const dashboardTitle = document.getElementById('dashboard-title');
             const noGameSection = document.getElementById('dashboard-no-game-section');
             const gameContent = document.getElementById('dashboard-game-content');
@@ -1706,6 +1713,8 @@
                 // Hide clear button
                 clearBtn.classList.remove('show');
             }
+            updateReportTitle();
+            updateDashboardTitle();
         });
         
         // Handle source tile expansion
@@ -4257,6 +4266,7 @@
             loadGames();
             updateNavIcons(); // Initialize icon colors based on active state
             updateReportTitle(); // Initialize report page state
+            updateDashboardTitle(); // Initialize dashboard page state
             debugIframeInteractions(); // Debug iframe scroll jump issue
             initDevTestingTab(); // Initialize Dev Testing tab based on feature flag
             monitorDevKeys(); // Monitor Dev Testing key inputs
