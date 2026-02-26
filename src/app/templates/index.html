@@ -598,9 +598,9 @@
                     </div>
                 </div>
                 
-                <!-- View Dashboard Button -->
+                <!-- Show Dashboard Button (visible only after Generate Report is clicked) -->
                 <div style="margin-top: 30px;">
-                    <button class="btn" id="view-dashboard-btn" style="display: none;" onclick="toggleDashboard()">View Dashboard</button>
+                    <button class="btn" id="view-dashboard-btn" style="display: none;" onclick="toggleDashboard()">Show Dashboard</button>
                 </div>
 
                 <!-- Embedded Dashboard Section -->
@@ -1193,7 +1193,7 @@
             const selectedGame = selectedValue ? (gameDropdown.options[gameDropdown.selectedIndex]?.dataset.gameName || selectedValue.split('|||')[0]) : '';
             const noGameSection = document.getElementById('report-no-game-section');
             const gameContent = document.getElementById('report-game-content');
-            const viewDashboardBtn = document.getElementById('view-dashboard-btn');
+            const chooseGameViewDashboardBtn = document.getElementById('choose-game-view-dashboard-btn');
             
             // Get report page config for icon and display name
             let iconPath = '/assets/databricks/primary-icon-orange-dashboards.svg';
@@ -1212,9 +1212,9 @@
                 // Show game content, hide no game section
                 noGameSection.style.display = 'none';
                 gameContent.style.display = 'block';
-                // Show View Dashboard button on Choose Game page
-                if (viewDashboardBtn) {
-                    viewDashboardBtn.style.display = 'block';
+                // Show View Dashboard button on Choose Game page (navigates to Dashboard tab)
+                if (chooseGameViewDashboardBtn) {
+                    chooseGameViewDashboardBtn.style.display = 'block';
                 }
                 // Load personas for the selected game
                 loadPersonas(selectedGame);
@@ -1226,8 +1226,8 @@
                 noGameSection.style.display = 'block';
                 gameContent.style.display = 'none';
                 // Hide View Dashboard button on Choose Game page
-                if (viewDashboardBtn) {
-                    viewDashboardBtn.style.display = 'none';
+                if (chooseGameViewDashboardBtn) {
+                    chooseGameViewDashboardBtn.style.display = 'none';
                 }
                 // Clear personas
                 loadPersonas(null);
@@ -3234,9 +3234,8 @@
                         });
                     });
                     
-                    // Show the View Dashboard button and Ask Genie button after successful report generation
+                    // Show the Show Dashboard button and Ask Genie button after successful report generation
                     viewDashboardBtn.style.display = 'block';
-                    viewDashboardBtn.textContent = 'View Dashboard';
                     askGenieBtn.style.display = 'block';
                     setTimeout(() => {
                         askGenieBtn.style.opacity = '1';
@@ -3317,7 +3316,6 @@
                 }
                 
                 dashboardSection.style.display = 'none';
-                viewDashboardBtn.textContent = 'View Dashboard';
             }
         }
         
