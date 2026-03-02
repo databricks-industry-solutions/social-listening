@@ -701,21 +701,21 @@
                     </div>
                     <div class="credentials-collapsible-content">
                         <p class="credentials-collapsible-content-text">Add/Update Reddit API credentials for ingestion.</p>
-                        <label class="credentials-input-label" for="credentials-reddit-input">Client ID</label>
-                        <div class="search-input-wrapper credentials-input-wrapper" style="margin-top: 6px;">
-                            <input type="text" id="credentials-reddit-input" placeholder="e.g. 'A_BCdef...'" class="credentials-text-input">
-                            <button type="button" class="inline-search-btn" id="credentials-reddit-btn">›</button>
+                        <div class="credentials-reddit-row">
+                            <div class="credentials-input-group">
+                                <label class="credentials-input-label" for="credentials-reddit-input">Client ID</label>
+                                <input type="text" id="credentials-reddit-input" placeholder="e.g. 'A_BCdef...'" class="credentials-text-input credentials-text-input-no-btn">
+                            </div>
+                            <div class="credentials-input-group">
+                                <label class="credentials-input-label" for="credentials-reddit-client-secret-input">Client Secret</label>
+                                <input type="text" id="credentials-reddit-client-secret-input" placeholder="e.g. '1ABCdef-1ABC...'" class="credentials-text-input credentials-text-input-no-btn">
+                            </div>
+                            <div class="credentials-input-group">
+                                <label class="credentials-input-label" for="credentials-reddit-user-agent-input">User Agent</label>
+                                <input type="text" id="credentials-reddit-user-agent-input" placeholder="e.g. 'abc:def:v0.1 (by u/user)'" class="credentials-text-input credentials-text-input-no-btn">
+                            </div>
                         </div>
-                        <label class="credentials-input-label" for="credentials-reddit-client-secret-input">Client Secret</label>
-                        <div class="search-input-wrapper credentials-input-wrapper" style="margin-top: 6px;">
-                            <input type="text" id="credentials-reddit-client-secret-input" placeholder="e.g. '1ABCdef-1ABC...'" class="credentials-text-input">
-                            <button type="button" class="inline-search-btn" id="credentials-reddit-client-secret-btn">›</button>
-                        </div>
-                        <label class="credentials-input-label" for="credentials-reddit-user-agent-input">User Agent</label>
-                        <div class="search-input-wrapper credentials-input-wrapper" style="margin-top: 6px;">
-                            <input type="text" id="credentials-reddit-user-agent-input" placeholder="e.g. 'abc:def:v0.1 (by u/user)'" class="credentials-text-input">
-                            <button type="button" class="inline-search-btn" id="credentials-reddit-user-agent-btn">›</button>
-                        </div>
+                        <button type="button" class="credentials-test-btn" onclick="handleCredentialsRetest('reddit')">Test Credentials</button>
                     </div>
                 </div>
             </div>

@@ -1292,7 +1292,54 @@ textarea {
 }
 
 .credentials-collapsible-content .credentials-input-wrapper:last-of-type {
-    margin-bottom: 20px;
+    margin-bottom: 0px;
+}
+
+/* Reddit credentials: 3 columns in one row (Client ID | Client Secret | User Agent) */
+.credentials-reddit-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-top: 6px;
+    margin-bottom: 12px;
+}
+
+.credentials-reddit-row .credentials-input-group {
+    min-width: 0;
+}
+
+.credentials-reddit-row .credentials-input-label {
+    margin-top: 0;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.credentials-text-input-no-btn {
+    padding-right: 14px !important;
+}
+
+.credentials-test-btn {
+    display: block;
+    width: 100%;
+    margin-bottom: 0px;
+    padding: 10px 20px;
+    font-size: 0.95em;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    border: 1px solid var(--color-primary);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.credentials-test-btn:hover {
+    box-shadow: 0 2px 8px rgba(var(--color-dark-accent-primary-rgb), 0.4);
+}
+
+.credentials-test-btn:active {
+    background: linear-gradient(135deg, var(--color-muted-primary) 0%, var(--color-muted-secondary) 100%);
+    border-color: var(--color-muted-primary);
 }
 
 .credentials-collapsible-content .credentials-text-input {
@@ -1304,6 +1351,18 @@ textarea {
     color: #e0e0e0;
     font-size: 14px;
     box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.credentials-collapsible-content .credentials-text-input:hover {
+    border-color: var(--color-primary);
+    background-color: #333333;
+}
+
+.credentials-collapsible-content .credentials-text-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-dark-accent-primary-rgb), 0.1);
 }
 
 /* Smaller > button with consistent margin inside credentials inputs */
@@ -1327,9 +1386,4 @@ textarea {
 
 .credentials-collapsible-content .credentials-text-input::placeholder {
     color: #808080;
-}
-
-.credentials-collapsible-content .credentials-text-input:focus {
-    outline: none;
-    border-color: #606060;
 }
