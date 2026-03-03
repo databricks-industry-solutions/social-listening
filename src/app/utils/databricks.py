@@ -131,5 +131,7 @@ class DatabricksClient:
             self.workspace_client.secrets.put_secret(scope=scope, key=key, string_value=string_value)
         except ResourceDoesNotExist as e:
             logger.warning(f"Secret scope does not exist: {scope}.")
+            raise
         except Exception as e:
             logger.error(f"Failed to put secret: {scope}/{key}. Error: {str(e)}")
+            raise

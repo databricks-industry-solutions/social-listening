@@ -64,7 +64,7 @@ async def test_steam_credentials_endpoint(
         set_steam_helper(steam_helper)
         if databricks_client is not None and secret_scope and steam_secret_key:
             try:
-                databricks_client.put_secret(scope=secret_scope, key=steam_secret_key, string_value=key_value or "")
+                databricks_client.put_secret(scope=secret_scope, key=steam_secret_key, string_value=key_value)
                 logger.info("Updated Databricks secret %s/%s", secret_scope, steam_secret_key)
             except Exception as e:
                 logger.warning("Could not update Databricks secret: %s", e)

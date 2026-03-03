@@ -697,7 +697,7 @@
                         <span class="credentials-collapsible-arrow">▼</span>
                         <img src="/assets/reddit/Reddit_Logo.webp" alt="Reddit" class="credentials-collapsible-icon">
                         <span class="credentials-collapsible-title">Reddit</span>
-                        <span class="credentials-collapsible-placeholder">Not configured</span>
+                        <span class="credentials-collapsible-placeholder" id="credentials-reddit-placeholder">Not configured</span>
                         <button type="button" class="credentials-retest-btn" onclick="event.stopPropagation(); handleCredentialsRetest('reddit')">Re-Test</button>
                     </div>
                     <div class="credentials-collapsible-content">
@@ -705,18 +705,19 @@
                         <div class="credentials-reddit-row">
                             <div class="credentials-input-group">
                                 <label class="credentials-input-label" for="credentials-reddit-input">Client ID</label>
-                                <input type="text" id="credentials-reddit-input" placeholder="e.g. 'A_BCdef...'" class="credentials-text-input credentials-text-input-no-btn">
+                                <input type="text" id="credentials-reddit-input" placeholder="e.g. 'A_BCdef...'" class="credentials-text-input credentials-text-input-no-btn" onkeypress="if(event.key==='Enter') handleRedditCredentialsTestFromInput()">
                             </div>
                             <div class="credentials-input-group">
                                 <label class="credentials-input-label" for="credentials-reddit-client-secret-input">Client Secret</label>
-                                <input type="text" id="credentials-reddit-client-secret-input" placeholder="e.g. '1ABCdef-1ABC...'" class="credentials-text-input credentials-text-input-no-btn">
+                                <input type="text" id="credentials-reddit-client-secret-input" placeholder="e.g. '1ABCdef-1ABC...'" class="credentials-text-input credentials-text-input-no-btn" onkeypress="if(event.key==='Enter') handleRedditCredentialsTestFromInput()">
                             </div>
                             <div class="credentials-input-group">
                                 <label class="credentials-input-label" for="credentials-reddit-user-agent-input">User Agent</label>
-                                <input type="text" id="credentials-reddit-user-agent-input" placeholder="e.g. 'abc:def:v0.1 (by u/user)'" class="credentials-text-input credentials-text-input-no-btn">
+                                <input type="text" id="credentials-reddit-user-agent-input" placeholder="e.g. 'abc:def:v0.1 (by u/user)'" class="credentials-text-input credentials-text-input-no-btn" onkeypress="if(event.key==='Enter') handleRedditCredentialsTestFromInput()">
                             </div>
                         </div>
-                        <button type="button" class="credentials-test-btn" onclick="handleCredentialsRetest('reddit')">Test Credentials</button>
+                        <button type="button" class="credentials-test-btn" onclick="handleRedditCredentialsTestFromInput()">Test Credentials</button>
+                        <div id="credentials-reddit-test-result" class="credentials-test-result credentials-test-result--hidden" aria-live="polite"></div>
                     </div>
                 </div>
             </div>
@@ -1072,8 +1073,10 @@
                 await handleSteamCredentialsTest(null, true);
                 return;
             }
-            // Reddit: can be wired later
-            console.log('Re-Test credentials:', source);
+            if (source === 'reddit') {
+                await handleRedditCredentialsTest(null, null, null, true);
+                return;
+            }
         }
 
         async function handleSteamCredentialsTest(apiKey, updatePlaceholderOnly) {
@@ -1132,7 +1135,72 @@
             }
             handleSteamCredentialsTest(value.trim());
         }
-        
+
+        async function handleRedditCredentialsTest(clientId, clientSecret, userAgent, updatePlaceholderOnly) {
+            const resultEl = document.getElementById('credentials-reddit-test-result');
+            const placeholderEl = document.getElementById('credentials-reddit-placeholder');
+            // When testing from form, send all three headers (use '' for blank) so backend treats blank as explicit empty.
+            // When Re-Test (updatePlaceholderOnly), send no headers so backend uses env for all.
+            const headers = {};
+            if (!updatePlaceholderOnly) {
+                headers['client-id'] = clientId != null ? String(clientId).trim() : '';
+                headers['client-secret'] = clientSecret != null ? String(clientSecret).trim() : '';
+                headers['reddit-user-agent'] = userAgent != null ? String(userAgent).trim() : '';
+            }
+
+            if (updatePlaceholderOnly) {
+                if (placeholderEl) placeholderEl.textContent = 'Testing…';
+            } else {
+                if (resultEl) {
+                    resultEl.className = 'credentials-test-result';
+                    resultEl.textContent = 'Testing…';
+                }
+            }
+
+            try {
+                const res = await fetch('/api/reddit/test-credentials', { headers });
+                const data = await res.json();
+                const status = data.status || 'invalid';
+                const placeholderText = status === 'valid' ? 'Connected' : status === 'not_configured' ? 'Not configured' : 'Invalid credentials';
+
+                if (updatePlaceholderOnly) {
+                    if (placeholderEl) placeholderEl.textContent = placeholderText;
+                } else {
+                    if (resultEl) {
+                        resultEl.textContent = status === 'valid' ? 'Credentials are valid; updated stored credentials.' : status === 'not_configured' ? 'One or more credentials are not configured (i.e. blank).' : 'Credentials are invalid.';
+                        resultEl.className = 'credentials-test-result credentials-test-result--' + status;
+                    }
+                }
+            } catch (e) {
+                if (updatePlaceholderOnly) {
+                    if (placeholderEl) placeholderEl.textContent = 'Invalid credentials';
+                } else {
+                    if (resultEl) {
+                        resultEl.textContent = 'Test failed: ' + (e.message || 'Network error');
+                        resultEl.className = 'credentials-test-result credentials-test-result--invalid';
+                    }
+                }
+            }
+        }
+
+        function handleRedditCredentialsTestFromInput() {
+            const clientIdEl = document.getElementById('credentials-reddit-input');
+            const clientSecretEl = document.getElementById('credentials-reddit-client-secret-input');
+            const userAgentEl = document.getElementById('credentials-reddit-user-agent-input');
+            const clientId = clientIdEl ? clientIdEl.value : '';
+            const clientSecret = clientSecretEl ? clientSecretEl.value : '';
+            const userAgent = userAgentEl ? userAgentEl.value : '';
+            const resultEl = document.getElementById('credentials-reddit-test-result');
+            if (clientId.trim() === '' && clientSecret.trim() === '' && userAgent.trim() === '') {
+                if (resultEl) {
+                    resultEl.textContent = '';
+                    resultEl.className = 'credentials-test-result credentials-test-result--hidden';
+                }
+                return;
+            }
+            handleRedditCredentialsTest(clientId, clientSecret, userAgent, false);
+        }
+
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const toggleBtn = document.getElementById('toggleBtn');
@@ -4411,6 +4479,7 @@
             initDevTestingTab(); // Initialize Dev Testing tab based on feature flag
             monitorDevKeys(); // Monitor Dev Testing key inputs
             handleSteamCredentialsTest(null, true); // Run Steam credentials check once on startup, update placeholder
+            handleRedditCredentialsTest(null, null, null, true); // Run Reddit credentials check once on startup, update placeholder
         });
     </script>
 </body>

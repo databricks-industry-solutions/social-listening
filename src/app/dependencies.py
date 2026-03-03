@@ -40,8 +40,18 @@ try:
         APP_DATA = yaml.safe_load(f)
 
     for item in APP_DATA.get("env") or []:
-        if isinstance(item, dict) and item.get("name") == "STEAM_API_KEY":
-            STEAM_API_KEY_SECRET_KEY = item.get("valueFrom")
+        if not isinstance(item, dict):
+            continue
+        name = item.get("name")
+        value_from = item.get("valueFrom")
+        if name == "STEAM_API_KEY":
+            STEAM_API_KEY_SECRET_KEY = value_from
+        elif name == "REDDIT_CLIENT_ID":
+            REDDIT_CLIENT_ID_SECRET_KEY = value_from
+        elif name == "REDDIT_CLIENT_SECRET":
+            REDDIT_CLIENT_SECRET_SECRET_KEY = value_from
+        elif name == "REDDIT_USER_AGENT":
+            REDDIT_USER_AGENT_SECRET_KEY = value_from
 except Exception as e:
     logger.error(f"Failed to load app.yaml file: {e}")
 
@@ -141,5 +151,20 @@ def set_steam_helper(helper: SteamHelper | None) -> None:
 async def get_google_play_helper() -> GooglePlayHelper:
     return google_play_helper
 
+def get_reddit_client_id_secret_key() -> str | None:
+    return REDDIT_CLIENT_ID_SECRET_KEY
+
+def get_reddit_client_secret_secret_key() -> str | None:
+    return REDDIT_CLIENT_SECRET_SECRET_KEY
+
+def get_reddit_user_agent_secret_key() -> str | None:
+    return REDDIT_USER_AGENT_SECRET_KEY
+
 async def get_reddit_helper() -> RedditHelper:
     return reddit_helper
+
+
+def set_reddit_helper(helper: RedditHelper | None) -> None:
+    """Update the app's RedditHelper (e.g. after a successful credentials test)."""
+    global reddit_helper
+    reddit_helper = helper

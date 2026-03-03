@@ -5,6 +5,7 @@ Documentation:
 https://praw.readthedocs.io/en/stable/
 """
 import praw
+from prawcore.exceptions import ResponseException, OAuthException, RequestException
 from datetime import datetime, timezone
 import logging
 
@@ -13,12 +14,21 @@ logger = logging.getLogger(__name__)
 
 class RedditHelper:
     def __init__(self, client_id: str, client_secret: str, user_agent: str):
+        # Check for empty credential values
+        for credential in [client_id, client_secret, user_agent]:
+            if not credential or credential == "":
+                raise ValueError(f"RedditHelper: Some credentials are empty")
+
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.user_agent = user_agent
         self.reddit = praw.Reddit(
             client_id=client_id,
             client_secret=client_secret,
             user_agent=user_agent,
             check_for_async=False
         )
+        self._test_credentials()
 
     def get_subreddit_info(self, subreddit_name: str) -> dict:
         """
@@ -54,3 +64,19 @@ class RedditHelper:
         subreddits = self.reddit.subreddits.search(search_term, limit=limit)
         subreddit_names = [subreddit.display_name for subreddit in subreddits]
         return subreddit_names
+    
+    def _test_credentials(self) -> None:
+        """
+        Check if the stored credentials are valid. Will raise an exception if not.
+        """
+        try:
+            results = [subreddit.display_name for subreddit in self.reddit.subreddits.search("games", limit=10)]
+        except (ResponseException, OAuthException) as e:
+            logger.warning(f"RedditHelper: Credentials are invalid: {e}")
+            raise
+        except RequestException as e:
+            logger.warning(f"RedditHelper: Some credentials are empty: {e}")
+            raise
+        except Exception as e:
+            logger.warning(f"RedditHelper: Failed to test credentials: {e}")
+            raise
