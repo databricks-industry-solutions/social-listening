@@ -14,6 +14,8 @@ databricks:
       category_page_game_filter_suffix: "..."
   genie:
     space_id: "..."
+  secrets:
+    scope: "..."
 
 # Modify this section to change aspects of the UI, e.g. display text, icons, etc.
 ui:

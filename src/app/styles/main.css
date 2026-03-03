@@ -1192,7 +1192,7 @@ textarea {
     padding: 18px 14px;
     cursor: pointer;
     font-weight: 600;
-    color: #e0e0e0;
+    color: #ffffff;
     transition: background 0.2s ease;
 }
 
@@ -1279,7 +1279,7 @@ textarea {
     margin-bottom: 0;
     font-size: 0.9em;
     font-weight: 600;
-    color: #b0b0b0;
+    color: #ffffff;
 }
 
 .credentials-collapsible-content .credentials-input-label:first-of-type {
@@ -1340,6 +1340,29 @@ textarea {
 .credentials-test-btn:active {
     background: linear-gradient(135deg, var(--color-muted-primary) 0%, var(--color-muted-secondary) 100%);
     border-color: var(--color-muted-primary);
+}
+
+.credentials-test-result {
+    margin-top: 10px;
+    font-size: 0.9em;
+    min-height: 1.4em;
+    color: #e0e0e0;
+}
+
+.credentials-test-result--hidden {
+    display: none;
+}
+
+.credentials-test-result--valid {
+    color: #2e7d32;
+}
+
+.credentials-test-result--invalid {
+    color: #c6a428;
+}
+
+.credentials-test-result--not_configured {
+    color: #b0b0b0;
 }
 
 .credentials-collapsible-content .credentials-text-input {

@@ -17,16 +17,33 @@ TEMPLATE_PATH = Path(__file__).parent / "templates" / "index.html"
 
 # Open main app config file
 config_file_path = "config.yaml"
-with open(config_file_path, 'r') as config_file:
-    CONFIG_DATA = yaml.safe_load(config_file)
+try:
+    with open(config_file_path, 'r') as config_file:
+        CONFIG_DATA = yaml.safe_load(config_file)
 
-    dashboard_url_data = CONFIG_DATA['databricks']['dashboard']['url']
-    DASHBOARD_BASE_URL = dashboard_url_data['base']
-    DASHBOARD_URL_GAME_FILTER_SUFFIX = dashboard_url_data['game_filter_suffix']
-    DASHBOARD_URL_CATEGORY_PAGE_GAME_FILTER_SUFFIX = dashboard_url_data['category_page_game_filter_suffix']
+        dashboard_url_data = CONFIG_DATA['databricks']['dashboard']['url']
+        DASHBOARD_BASE_URL = dashboard_url_data['base']
+        DASHBOARD_URL_GAME_FILTER_SUFFIX = dashboard_url_data['game_filter_suffix']
+        DASHBOARD_URL_CATEGORY_PAGE_GAME_FILTER_SUFFIX = dashboard_url_data['category_page_game_filter_suffix']
 
-    CATALOG_NAME = CONFIG_DATA['databricks']['catalog']
-    SCHEMA_NAME = CONFIG_DATA['databricks']['schema']
+        CATALOG_NAME = CONFIG_DATA['databricks']['catalog']
+        SCHEMA_NAME = CONFIG_DATA['databricks']['schema']
+
+        SECRET_SCOPE = CONFIG_DATA['databricks']['secrets']['scope']
+except Exception as e:
+    logger.error(f"Failed to load config file: {e}")
+
+# Open app.yaml file
+app_yaml_path = "app.yaml"
+try:
+    with open(app_yaml_path, 'r') as f:
+        APP_DATA = yaml.safe_load(f)
+
+    for item in APP_DATA.get("env") or []:
+        if isinstance(item, dict) and item.get("name") == "STEAM_API_KEY":
+            STEAM_API_KEY_SECRET_KEY = item.get("valueFrom")
+except Exception as e:
+    logger.error(f"Failed to load app.yaml file: {e}")
 
 # Initialize DataLoader
 try:
@@ -103,8 +120,23 @@ async def get_data_loader() -> DataLoader:
 async def get_databricks_client() -> DatabricksClient:
     return databricks_client
 
+
+def get_secret_scope() -> str | None:
+    """Return the Databricks secret scope from config, or None if not set."""
+    return SECRET_SCOPE
+
+def get_steam_api_key_secret_key() -> str | None:
+    """Return the Databricks secret key for STEAM_API_KEY from app.yaml (env[].valueFrom), or None."""
+    return STEAM_API_KEY_SECRET_KEY
+
 async def get_steam_helper() -> SteamHelper:
     return steam_helper
+
+
+def set_steam_helper(helper: SteamHelper | None) -> None:
+    """Update the app's SteamHelper (e.g. after a successful credentials test with a new key)."""
+    global steam_helper
+    steam_helper = helper
 
 async def get_google_play_helper() -> GooglePlayHelper:
     return google_play_helper

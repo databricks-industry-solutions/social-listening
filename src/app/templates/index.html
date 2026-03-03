@@ -679,16 +679,17 @@
                         <span class="credentials-collapsible-arrow">▼</span>
                         <img src="/assets/steam/Steam_icon_logo.svg" alt="Steam" class="credentials-collapsible-icon">
                         <span class="credentials-collapsible-title">Steam</span>
-                        <span class="credentials-collapsible-placeholder">Not configured</span>
+                        <span class="credentials-collapsible-placeholder" id="credentials-steam-placeholder">Not configured</span>
                         <button type="button" class="credentials-retest-btn" onclick="event.stopPropagation(); handleCredentialsRetest('steam')">Re-Test</button>
                     </div>
                     <div class="credentials-collapsible-content">
                         <p class="credentials-collapsible-content-text">Add/Update Steam API credentials for ingestion.</p>
                         <label class="credentials-input-label" for="credentials-steam-input">API Key</label>
                         <div class="search-input-wrapper credentials-input-wrapper" style="margin-top: 6px;">
-                            <input type="text" id="credentials-steam-input" placeholder="e.g. 'A123B456C...'" class="credentials-text-input">
-                            <button type="button" class="inline-search-btn" id="credentials-steam-btn">›</button>
+                            <input type="text" id="credentials-steam-input" placeholder="e.g. 'A123B456C...'" class="credentials-text-input" onkeypress="if(event.key==='Enter') handleSteamCredentialsTestFromInput()">
+                            <button type="button" class="inline-search-btn" id="credentials-steam-btn" onclick="handleSteamCredentialsTestFromInput()">›</button>
                         </div>
+                        <div id="credentials-steam-test-result" class="credentials-test-result credentials-test-result--hidden" aria-live="polite"></div>
                     </div>
                 </div>
                 <div class="credentials-collapsible collapsed" id="credentials-reddit-section">
@@ -1066,10 +1067,69 @@
             section.classList.toggle('collapsed');
         }
 
-        function handleCredentialsRetest(source) {
-            // Re-test credentials for the given source ('steam' or 'reddit').
-            // Can be wired to e.g. POST /api/credentials/test?source=...
+        async function handleCredentialsRetest(source) {
+            if (source === 'steam') {
+                await handleSteamCredentialsTest(null, true);
+                return;
+            }
+            // Reddit: can be wired later
             console.log('Re-Test credentials:', source);
+        }
+
+        async function handleSteamCredentialsTest(apiKey, updatePlaceholderOnly) {
+            const resultEl = document.getElementById('credentials-steam-test-result');
+            const placeholderEl = document.getElementById('credentials-steam-placeholder');
+            const url = apiKey != null && apiKey.trim() !== ''
+                ? `/api/steam/test-credentials?api_key=${encodeURIComponent(apiKey.trim())}`
+                : '/api/steam/test-credentials';
+
+            if (updatePlaceholderOnly) {
+                if (placeholderEl) placeholderEl.textContent = 'Testing…';
+            } else {
+                if (resultEl) {
+                    resultEl.className = 'credentials-test-result';
+                    resultEl.textContent = 'Testing…';
+                }
+            }
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                const status = data.status || 'fail';
+                const placeholderText = status === 'valid' ? 'Connected' : status === 'not_configured' ? 'Not configured' : 'Invalid credentials';
+
+                if (updatePlaceholderOnly) {
+                    if (placeholderEl) placeholderEl.textContent = placeholderText;
+                } else {
+                    if (resultEl) {
+                        resultEl.textContent = status === 'valid' ? 'Credentials are valid; updated stored credentials.' : status === 'not_configured' ? 'No API key configured.' : 'Credentials are invalid.';
+                        resultEl.className = 'credentials-test-result credentials-test-result--' + status;
+                    }
+                }
+            } catch (e) {
+                if (updatePlaceholderOnly) {
+                    if (placeholderEl) placeholderEl.textContent = 'Invalid credentials';
+                } else {
+                    if (resultEl) {
+                        resultEl.textContent = 'Test failed: ' + (e.message || 'Network error');
+                        resultEl.className = 'credentials-test-result credentials-test-result--invalid';
+                    }
+                }
+            }
+        }
+
+        function handleSteamCredentialsTestFromInput() {
+            const input = document.getElementById('credentials-steam-input');
+            const value = input ? input.value : '';
+            const resultEl = document.getElementById('credentials-steam-test-result');
+            if (value.trim() === '') {
+                if (resultEl) {
+                    resultEl.textContent = '';
+                    resultEl.className = 'credentials-test-result credentials-test-result--hidden';
+                }
+                return;
+            }
+            handleSteamCredentialsTest(value.trim());
         }
         
         function toggleSidebar() {
@@ -4349,6 +4409,7 @@
             debugIframeInteractions(); // Debug iframe scroll jump issue
             initDevTestingTab(); // Initialize Dev Testing tab based on feature flag
             monitorDevKeys(); // Monitor Dev Testing key inputs
+            handleSteamCredentialsTest(null, true); // Run Steam credentials check once on startup, update placeholder
         });
     </script>
 </body>

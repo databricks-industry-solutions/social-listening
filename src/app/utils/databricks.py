@@ -5,6 +5,7 @@ import logging
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.core import Config
 from databricks.sdk.service import jobs
+from databricks.sdk.errors import ResourceDoesNotExist
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -114,3 +115,21 @@ class DatabricksClient:
             List of dictionaries containing column name and type
         """
         return self.generic_table_required_format
+
+    def get_secret(self, scope: str, key: str) -> str:
+        """
+        Gets a secret from the Databricks workspace.
+        """
+        secret = self.workspace_client.secrets.get_secret(scope, key)
+        return secret
+    
+    def put_secret(self, scope: str, key: str, string_value: str) -> None:
+        """
+        Puts a secret into the Databricks workspace.
+        """
+        try:
+            self.workspace_client.secrets.put_secret(scope=scope, key=key, string_value=string_value)
+        except ResourceDoesNotExist as e:
+            logger.warning(f"Secret scope does not exist: {scope}.")
+        except Exception as e:
+            logger.error(f"Failed to put secret: {scope}/{key}. Error: {str(e)}")

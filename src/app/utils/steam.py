@@ -18,7 +18,7 @@ class SteamHelper:
     def __init__(self, api_key: str=None):
         self.api_key = api_key # Not necessary for all API functions
         self.app_list = self.get_all_steam_apps()
-        if self.app_list is None:
+        if self.app_list is None or self.app_list == []:
             raise Exception("SteamHelper: Failed to get all Steam apps; see logs for more details.")
         self.app_list_lower_names = self.get_app_lower_names_from_app_list(self.app_list)
         self.app_list_ids = self.get_app_ids_from_app_list(self.app_list)
