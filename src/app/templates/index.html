@@ -1079,9 +1079,10 @@
         async function handleSteamCredentialsTest(apiKey, updatePlaceholderOnly) {
             const resultEl = document.getElementById('credentials-steam-test-result');
             const placeholderEl = document.getElementById('credentials-steam-placeholder');
-            const url = apiKey != null && apiKey.trim() !== ''
-                ? `/api/steam/test-credentials?api_key=${encodeURIComponent(apiKey.trim())}`
-                : '/api/steam/test-credentials';
+            const headers = {};
+            if (apiKey != null && apiKey.trim() !== '') {
+                headers['api-key'] = apiKey.trim();
+            }
 
             if (updatePlaceholderOnly) {
                 if (placeholderEl) placeholderEl.textContent = 'Testing…';
@@ -1093,7 +1094,7 @@
             }
 
             try {
-                const res = await fetch(url);
+                const res = await fetch('/api/steam/test-credentials', { headers });
                 const data = await res.json();
                 const status = data.status || 'fail';
                 const placeholderText = status === 'valid' ? 'Connected' : status === 'not_configured' ? 'Not configured' : 'Invalid credentials';

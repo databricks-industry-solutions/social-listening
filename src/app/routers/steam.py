@@ -2,7 +2,7 @@ import logging
 import os
 from enum import Enum
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Header, Query
 from fastapi.responses import JSONResponse
 from utils.steam import SteamHelper
 from utils.databricks import DatabricksClient
@@ -47,7 +47,7 @@ def test_steam_credentials(api_key: str | None = None) -> tuple[SteamCredentials
 
 @router.get('/test-credentials')
 async def test_steam_credentials_endpoint(
-    api_key: str | None = Query(None, description="Steam API key to test; if omitted, uses STEAM_API_KEY env var"),
+    api_key: str | None = Header(None, description="Steam API key to test; if omitted, uses STEAM_API_KEY env var"),
     databricks_client: DatabricksClient | None = Depends(get_databricks_client),
     secret_scope: str | None = Depends(get_secret_scope),
     steam_secret_key: str | None = Depends(get_steam_api_key_secret_key),
