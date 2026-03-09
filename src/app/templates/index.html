@@ -214,6 +214,22 @@
                     <p>Search 100k+ subreddits</p>
                 </div>
 
+                <div class="source-tile" id="jira-tile" data-source-id="jira" onclick="expandSourceTile('jira')">
+                    <div class="source-icon">
+                        <img src="/assets/misc/jira_logo.png" alt="Jira">
+                    </div>
+                    <h3>Jira</h3>
+                    <p>Search tickets, boards, and more.</p>
+                </div>
+
+                <div class="source-tile" id="qualtrics-tile" data-source-id="qualtrics" onclick="expandSourceTile('qualtrics')">
+                    <div class="source-icon">
+                        <img src="/assets/misc/qualtrics_logo_filled.png" alt="Qualtrics" class="qualtrics-logo-rounded">
+                    </div>
+                    <h3>Qualtrics</h3>
+                    <p>Search surveys, complaints, and more.</p>
+                </div>
+
                 <div class="source-tile" id="generic-table-tile" data-source-id="generic_table" onclick="expandSourceTile('generic-table')">
                     <div class="source-icon">
                         <img src="/assets/databricks/primary-icon-orange-unity-catalog.svg" alt="Generic Table">
@@ -398,6 +414,48 @@
                     
                     <!-- Message area -->
                     <div id="reddit-message" style="margin-top: 20px;"></div>
+                </div>
+            </div>
+
+            <div class="source-search-container" id="jira-search" style="display: none;">
+                <div class="search-header">
+                    <h3>
+                        <img src="/assets/misc/jira_logo.png" alt="Jira">
+                        Jira Search
+                    </h3>
+                    <button class="close-btn" onclick="closeSourceTile()">✕</button>
+                </div>
+                <div class="search-body">
+                    <div class="form-group">
+                        <label for="jira-search-input">Search Jira</label>
+                        <div class="search-input-wrapper">
+                            <input type="text" id="jira-search-input" placeholder="Enter search here" onkeypress="if(event.key==='Enter') handlePlaceholderSourceSearch('jira')">
+                            <button class="inline-search-btn" id="jira-search-btn" onclick="handlePlaceholderSourceSearch('jira')">›</button>
+                        </div>
+                    </div>
+                    <!-- Message area for not implemented -->
+                    <div id="jira-message" style="margin-top: 20px;"></div>
+                </div>
+            </div>
+
+            <div class="source-search-container" id="qualtrics-search" style="display: none;">
+                <div class="search-header">
+                    <h3>
+                        <img src="/assets/misc/qualtrics_logo_filled.png" alt="Qualtrics" class="qualtrics-logo-rounded">
+                        Qualtrics Search
+                    </h3>
+                    <button class="close-btn" onclick="closeSourceTile()">✕</button>
+                </div>
+                <div class="search-body">
+                    <div class="form-group">
+                        <label for="qualtrics-search-input">Search Qualtrics</label>
+                        <div class="search-input-wrapper">
+                            <input type="text" id="qualtrics-search-input" placeholder="Enter search here" onkeypress="if(event.key==='Enter') handlePlaceholderSourceSearch('qualtrics')">
+                            <button class="inline-search-btn" id="qualtrics-search-btn" onclick="handlePlaceholderSourceSearch('qualtrics')">›</button>
+                        </div>
+                    </div>
+                    <!-- Message area for not implemented -->
+                    <div id="qualtrics-message" style="margin-top: 20px;"></div>
                 </div>
             </div>
 
@@ -989,10 +1047,11 @@
             const visibleCount = sources.length;
             console.log('Add Game tiles: Visible count:', visibleCount);
             
-            // Add the 4-tiles modifier class if there are exactly 4 tiles
+            container.classList.remove('source-tiles-container-4-tiles', 'source-tiles-container-6-tiles');
             if (visibleCount === 4) {
                 container.classList.add('source-tiles-container-4-tiles');
-                console.log('Adding 4-tiles layout');
+            } else if (visibleCount >= 5) {
+                container.classList.add('source-tiles-container-6-tiles');
             }
             
             console.log('Add Game source tiles organized from config');
@@ -1510,6 +1569,10 @@
                 return '/assets/google_play/Google_Play_2022_icon.svg';
             } else if (contentTypeLower.includes('reddit')) {
                 return '/assets/reddit/Reddit_Logo.webp';
+            } else if (contentTypeLower.includes('jira')) {
+                return '/assets/misc/jira_logo.png';
+            } else if (contentTypeLower.includes('qualtrics')) {
+                return '/assets/misc/qualtrics_logo_filled.png';
             }
             // Return Unity Catalog icon for "other" content types
             return '/assets/databricks/primary-icon-orange-unity-catalog.svg';
@@ -2861,6 +2924,26 @@
                 addGameBtn.disabled = false;
                 addGameBtn.style.opacity = '1';
             }
+        }
+
+        // Handle Jira/Qualtrics placeholder search (not implemented yet)
+        function handlePlaceholderSourceSearch(source) {
+            const label = source === 'jira' ? 'Jira' : 'Qualtrics';
+            const inputEl = document.getElementById(`${source}-search-input`);
+            const messageEl = document.getElementById(`${source}-message`);
+            if (!inputEl || !messageEl) return;
+            const value = (inputEl.value || '').trim();
+            if (!value) {
+                messageEl.innerHTML = '';
+                return;
+            }
+            messageEl.innerHTML = `
+                <div style="background: #fff3cd; padding: 15px; border-radius: 10px; border-left: 4px solid #ffc107; color: #856404;">
+                    <p style="margin: 0; font-size: 0.95em;">
+                        ${label} has not been implemented yet; contact your Databricks account team today to get it set up!
+                    </p>
+                </div>
+            `;
         }
 
         // Handle Generic Table input submission

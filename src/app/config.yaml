@@ -32,11 +32,13 @@ ui:
         game_designer: "Game Designer"
     # The items and ordering here determine what tiles are displayed in the Add Game section.
     # If this section is blank, a default set will be displayed.
-    # The options are: steam, google_play, reddit, generic_table.
+    # The options are: steam, google_play, reddit, jira, qualtrics, generic_table.
     add_game_sources:
       - steam
       - google_play
       - reddit
+      - jira
+      - qualtrics
   sidebar:
     header:
       title: "Social Listening"
