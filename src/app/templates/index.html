@@ -4371,69 +4371,45 @@
             }
         });
         
-        // Debug iframe interactions
+        // Prevent right-click (and other iframe interactions) in dashboard iframes from causing the page to scroll.
+        // Applied to both the Report page embedded dashboard and the standalone Dashboard tab iframe.
         function debugIframeInteractions() {
-            const iframe = document.getElementById('dashboard-iframe'); // dev-testing-dashboard-iframe
-            if (!iframe) {
-                console.log('Iframe to debug not found');
-                return;
-            }
-            
-            console.log('Setting up iframe interaction logging');
-            
-            let mouseOverIframe = false;
-            let targetScrollTop = undefined;
             const mainContent = document.querySelector('.main-content');
             if (!mainContent) return;
 
-            // Log when mouse enters iframe
-            iframe.addEventListener('mouseenter', (e) => {
+            const iframeIds = ['dashboard-iframe', 'dashboard-tab-iframe'];
+            const iframes = iframeIds.map(id => document.getElementById(id)).filter(Boolean);
+            if (iframes.length === 0) return;
+
+            let mouseOverIframe = false;
+            let targetScrollTop = undefined;
+
+            function onIframeMouseEnter() {
                 mouseOverIframe = true;
-                mainContent.style.overflow = 'hidden'; // Disable scrolling on main-content
-
+                mainContent.style.overflow = 'hidden';
                 targetScrollTop = mainContent.scrollTop;
-                // const doc = window.document.documentElement;
-                // let prevPositionStyle = mainContent.style.position ?? undefined;
-                // mainContent.style.position = 'fixed';
-                // mainContent.style.top = (preScrollTop * -1) + 'px';
+            }
 
-                console.log('Mouse ENTERED iframe', {
-                    scrollX: window.scrollX,
-                    scrollY: window.scrollY,
-                    targetScrollTop: targetScrollTop,
-                    // prevPositionStyle: prevPositionStyle,
-                    timestamp: new Date().toISOString()
-                });
-            });
-            
-            // Log when mouse leaves iframe
-            iframe.addEventListener('mouseleave', (e) => {
+            function onIframeMouseLeave() {
                 mouseOverIframe = false;
                 mainContent.style.overflow = 'auto';
                 targetScrollTop = undefined;
+            }
 
-                console.log('Mouse EXITED iframe', {
-                    scrollX: window.scrollX,
-                    scrollY: window.scrollY,
-                    timestamp: new Date().toISOString()
-                });
+            iframes.forEach(iframe => {
+                iframe.addEventListener('mouseenter', onIframeMouseEnter);
+                iframe.addEventListener('mouseleave', onIframeMouseLeave);
             });
-            
-            // Reset scroll position if needed (i.e. due to pesky iframe)
+
+            // Reset scroll position if it changes while pointer is over an iframe (e.g. right-click inside iframe)
             mainContent.addEventListener('scroll', () => {
                 if (mouseOverIframe && targetScrollTop !== undefined) {
                     const currentScrollTop = mainContent.scrollTop;
                     if (currentScrollTop !== targetScrollTop) {
-                        console.log('Scroll detected while over iframe - Resetting scroll position', {
-                            currentScrollTop: currentScrollTop,
-                            targetScrollTop: targetScrollTop,
-                            timestamp: new Date().toISOString()
-                        });
                         mainContent.scrollTop = targetScrollTop;
                     }
                 }
             }, { passive: false });
-            
         }
         
         // Load games when page loads
