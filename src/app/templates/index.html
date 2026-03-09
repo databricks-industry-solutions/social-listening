@@ -683,7 +683,7 @@
                         <button type="button" class="credentials-retest-btn" onclick="event.stopPropagation(); handleCredentialsRetest('steam')">Re-Test</button>
                     </div>
                     <div class="credentials-collapsible-content">
-                        <p class="credentials-collapsible-content-text">Add/Update Steam API credentials for ingestion.</p>
+                        <p class="credentials-collapsible-content-text">Add/Update Steam API credentials for ingestion.<br><span class="credentials-bullet-line">• Obtain an API key (free) by creating a <a href="https://store.steampowered.com/join" target="_blank" rel="noopener noreferrer">Steam account</a> and then going <a href="https://steamcommunity.com/dev" target="_blank" rel="noopener noreferrer">here</a>.</span></p>
                         <label class="credentials-input-label" for="credentials-steam-input">API Key</label>
                         <div class="search-input-wrapper credentials-input-wrapper" style="margin-top: 6px;">
                             <input type="text" id="credentials-steam-input" placeholder="e.g. 'A123B456C...'" class="credentials-text-input" onkeypress="if(event.key==='Enter') handleSteamCredentialsTestFromInput()">
@@ -701,7 +701,7 @@
                         <button type="button" class="credentials-retest-btn" onclick="event.stopPropagation(); handleCredentialsRetest('reddit')">Re-Test</button>
                     </div>
                     <div class="credentials-collapsible-content">
-                        <p class="credentials-collapsible-content-text">Add/Update Reddit API credentials for ingestion.</p>
+                        <p class="credentials-collapsible-content-text">Add/Update Reddit API credentials for ingestion.<br><span class="credentials-bullet-line">• Obtain these by creating a free Developer Account <a href="https://developers.reddit.com/" target="_blank" rel="noopener noreferrer">here</a>.</span><br><span class="credentials-extra-line">If you have previously stored credentials, you may update a subset of those by only filling in some of the fields below.</span></p>
                         <div class="credentials-reddit-row">
                             <div class="credentials-input-group">
                                 <label class="credentials-input-label" for="credentials-reddit-input">Client ID</label>
@@ -1088,7 +1088,10 @@
             }
 
             if (updatePlaceholderOnly) {
-                if (placeholderEl) placeholderEl.textContent = 'Testing…';
+                if (placeholderEl) {
+                    placeholderEl.textContent = 'Testing…';
+                    placeholderEl.className = 'credentials-collapsible-placeholder credentials-collapsible-placeholder--testing';
+                }
             } else {
                 if (resultEl) {
                     resultEl.className = 'credentials-test-result';
@@ -1100,19 +1103,29 @@
                 const res = await fetch('/api/steam/test-credentials', { headers });
                 const data = await res.json();
                 const status = data.status || 'fail';
-                const placeholderText = status === 'valid' ? 'Connected' : status === 'not_configured' ? 'Not configured' : 'Invalid credentials';
+                const placeholderText = status === 'valid' ? 'Connected \u2611' : status === 'not_configured' ? 'Not configured' : 'Invalid credentials';
 
                 if (updatePlaceholderOnly) {
-                    if (placeholderEl) placeholderEl.textContent = placeholderText;
+                    if (placeholderEl) {
+                        placeholderEl.textContent = placeholderText;
+                        placeholderEl.className = 'credentials-collapsible-placeholder' + (status === 'valid' ? ' credentials-collapsible-placeholder--valid' : status === 'invalid' ? ' credentials-collapsible-placeholder--invalid' : status === 'not_configured' ? ' credentials-collapsible-placeholder--not_configured' : '');
+                    }
                 } else {
                     if (resultEl) {
                         resultEl.textContent = status === 'valid' ? 'Credentials are valid; updated stored credentials.' : status === 'not_configured' ? 'No API key configured.' : 'Credentials are invalid.';
                         resultEl.className = 'credentials-test-result credentials-test-result--' + status;
                     }
+                    if (status === 'valid' && placeholderEl) {
+                        placeholderEl.textContent = 'Connected \u2611';
+                        placeholderEl.className = 'credentials-collapsible-placeholder credentials-collapsible-placeholder--valid';
+                    }
                 }
             } catch (e) {
                 if (updatePlaceholderOnly) {
-                    if (placeholderEl) placeholderEl.textContent = 'Invalid credentials';
+                    if (placeholderEl) {
+                        placeholderEl.textContent = 'Invalid credentials';
+                        placeholderEl.className = 'credentials-collapsible-placeholder credentials-collapsible-placeholder--invalid';
+                    }
                 } else {
                     if (resultEl) {
                         resultEl.textContent = 'Test failed: ' + (e.message || 'Network error');
@@ -1149,7 +1162,10 @@
             }
 
             if (updatePlaceholderOnly) {
-                if (placeholderEl) placeholderEl.textContent = 'Testing…';
+                if (placeholderEl) {
+                    placeholderEl.textContent = 'Testing…';
+                    placeholderEl.className = 'credentials-collapsible-placeholder credentials-collapsible-placeholder--testing';
+                }
             } else {
                 if (resultEl) {
                     resultEl.className = 'credentials-test-result';
@@ -1161,19 +1177,29 @@
                 const res = await fetch('/api/reddit/test-credentials', { headers });
                 const data = await res.json();
                 const status = data.status || 'invalid';
-                const placeholderText = status === 'valid' ? 'Connected' : status === 'not_configured' ? 'Not configured' : 'Invalid credentials';
+                const placeholderText = status === 'valid' ? 'Connected \u2611' : status === 'not_configured' ? 'Not configured' : 'Invalid credentials';
 
                 if (updatePlaceholderOnly) {
-                    if (placeholderEl) placeholderEl.textContent = placeholderText;
+                    if (placeholderEl) {
+                        placeholderEl.textContent = placeholderText;
+                        placeholderEl.className = 'credentials-collapsible-placeholder' + (status === 'valid' ? ' credentials-collapsible-placeholder--valid' : status === 'invalid' ? ' credentials-collapsible-placeholder--invalid' : status === 'not_configured' ? ' credentials-collapsible-placeholder--not_configured' : '');
+                    }
                 } else {
                     if (resultEl) {
                         resultEl.textContent = status === 'valid' ? 'Credentials are valid; updated stored credentials.' : status === 'not_configured' ? 'One or more credentials are not configured (i.e. blank).' : 'Credentials are invalid.';
                         resultEl.className = 'credentials-test-result credentials-test-result--' + status;
                     }
+                    if (status === 'valid' && placeholderEl) {
+                        placeholderEl.textContent = 'Connected \u2611';
+                        placeholderEl.className = 'credentials-collapsible-placeholder credentials-collapsible-placeholder--valid';
+                    }
                 }
             } catch (e) {
                 if (updatePlaceholderOnly) {
-                    if (placeholderEl) placeholderEl.textContent = 'Invalid credentials';
+                    if (placeholderEl) {
+                        placeholderEl.textContent = 'Invalid credentials';
+                        placeholderEl.className = 'credentials-collapsible-placeholder credentials-collapsible-placeholder--invalid';
+                    }
                 } else {
                     if (resultEl) {
                         resultEl.textContent = 'Test failed: ' + (e.message || 'Network error');

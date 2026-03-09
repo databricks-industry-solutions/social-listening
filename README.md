@@ -35,7 +35,7 @@ This solution uses [Databricks Asset Bundle](https://docs.databricks.com/en/dev-
 ### Demo Quick Start (Recommended)
 
 1. **Clone the Repository to your Databricks workspace using a [Git Folder](https://docs.databricks.com/aws/en/repos/repos-setup)**
-2. **(Optional)** - To enable Steam and Reddit ingestion, see [docs/CONFIGURATION.md#enable-ingestion from-reddit-and-steam](docs/CONFIGURATION.md#enable-steam-and-reddit). **This requires API secrets**.
+2. **(Optional)** - To enable Steam and Reddit ingestion, see the instructions in [docs/CONFIGURATION.md](docs/CONFIGURATION.md#enable-steam-and-reddit). **This requires API keys (free) for those platforms**.
 3. Access the `Demo_Setup.ipynb` notebook and populate the widgets at the top with your desired values.
 ![installation_quickstart_widgets](docs/assets/installation_quickstart_widgets.png)
 

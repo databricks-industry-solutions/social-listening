@@ -112,15 +112,20 @@ Customize the demo for your use case, industry, and more.
 
 ### Enable Steam and Reddit
 
-To enable ingestion from Steam and Reddit, you'll need to provide API keys to authenticate API calls.
+To enable ingestion from Steam and Reddit, you'll need to provide API keys to authenticate API calls. Under the hood, these will be stored securely as [Databricks Secrets](https://docs.databricks.com/aws/en/security/secrets/).
 
 #### 0. Obtain Keys
-- Steam: Follow the instructions to obtain a free Web API key [here](https://steamcommunity.com/dev). You will need a Steam account.
-- Reddit: Sign up to create a free Developer account [here](https://developers.reddit.com/).
+- Steam:
+  - Follow the instructions to obtain a free Web API key [here](https://steamcommunity.com/dev). You will need a [Steam account](https://store.steampowered.com/join).
+- Reddit:
+  - Sign up to create a free Developer account [here](https://developers.reddit.com/).
   - This will get you these required keys: `client_id`, `client_secret`, `user_agent`.
 
-#### 1. Add Secrets
-- Option 1: [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/)
+#### 1. Add Your Keys
+- Option 1: In-App Settings
+  - Simply launch the app and provide your keys on the Settings > Credentials page.
+
+- Option 2: [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/)
 
   ```bash
   # Create Steam secret
@@ -135,7 +140,7 @@ To enable ingestion from Steam and Reddit, you'll need to provide API keys to au
   databricks secrets list-secrets social_listening_app
   ```
 
-- Option 2: [Databricks Notebook](https://docs.databricks.com/aws/en/notebooks/)
+- Option 3: [Databricks Notebook](https://docs.databricks.com/aws/en/notebooks/)
 
   - Use the `Secrets_Helper.ipynb` notebook provided in this repository.
 

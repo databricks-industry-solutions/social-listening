@@ -1224,9 +1224,25 @@ textarea {
 
 .credentials-collapsible-placeholder {
     font-size: 1.05em;
-    font-weight: 500;
-    color: #d4a017;
+    font-weight: 700;
     margin-left: auto;
+    color: #d4a017;
+}
+
+.credentials-collapsible-placeholder--valid {
+    color: #4caf50;
+}
+
+.credentials-collapsible-placeholder--invalid {
+    color: #c62828;
+}
+
+.credentials-collapsible-placeholder--not_configured {
+    color: #d4a017;
+}
+
+.credentials-collapsible-placeholder--testing {
+    color: #ffffff;
 }
 
 .credentials-retest-btn {
@@ -1260,7 +1276,19 @@ textarea {
     transition: max-height 0.12s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+#credentials-reddit-section .credentials-collapsible-content {
+    max-height: 500px;
+}
+
 .credentials-collapsible.collapsed .credentials-collapsible-content {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-top-width: 0;
+}
+
+/* Reddit: ensure collapsed state overrides the section's larger max-height */
+#credentials-reddit-section.credentials-collapsible.collapsed .credentials-collapsible-content {
     max-height: 0;
     padding-top: 0;
     padding-bottom: 0;
@@ -1270,6 +1298,26 @@ textarea {
 .credentials-collapsible-content-text {
     color: #b0b0b0;
     margin: 0;
+}
+
+.credentials-bullet-line {
+    display: block;
+    margin-left: 1.25em;
+    margin-top: 0.5em;
+}
+
+.credentials-extra-line {
+    display: block;
+    margin-top: 0.5em;
+}
+
+.credentials-collapsible-content-text a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.credentials-collapsible-content-text a:hover {
+    text-decoration: underline;
 }
 
 /* Label above credentials inputs */
@@ -1354,7 +1402,7 @@ textarea {
 }
 
 .credentials-test-result--valid {
-    color: #2e7d32;
+    color: #4caf50;
 }
 
 .credentials-test-result--invalid {
