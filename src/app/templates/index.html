@@ -2113,8 +2113,8 @@
                 googlePlayContentWrapper.classList.remove('has-results');
             }
             
-            // Show tiles again
-            document.querySelector('.source-tiles-container').style.display = 'grid';
+            // Show tiles again (use empty string so CSS class controls layout: grid or flex)
+            document.querySelector('.source-tiles-container').style.display = '';
         }
         
         // Handle Steam search
