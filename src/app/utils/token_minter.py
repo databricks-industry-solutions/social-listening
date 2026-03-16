@@ -22,9 +22,9 @@ class TokenMinter:
         self.lock = threading.RLock()
         self._refresh_token()
 
-        logger.info("TokenMinter: Client ID: %s", self.client_id)
-        logger.info("TokenMinter: Client Secret: %s", self.client_secret)
-        logger.info("TokenMinter: Host: %s", self.host)
+        # logger.info("TokenMinter: Client ID: %s", self.client_id)
+        # logger.info("TokenMinter: Client Secret: %s", self.client_secret)
+        # logger.info("TokenMinter: Host: %s", self.host)
         
     def _refresh_token(self) -> None:
         """Internal method to refresh the OAuth token"""
@@ -36,10 +36,10 @@ class TokenMinter:
 
         try:
             response = requests.post(url, auth=auth, data=data)
-            logger.info(f"Response status code: {response.status_code}")
-            logger.info(f"Response: {response.text}")
+            # logger.info(f"Response status code: {response.status_code}")
+            # logger.info(f"Response: {response.text}")
             response.raise_for_status()
-            logger.info(f"Response JSON: {response.json()}")
+            # logger.info(f"Response JSON: {response.json()}")
             token_data = response.json()
             
             with self.lock:
