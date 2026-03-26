@@ -1,7 +1,7 @@
 resources:
   jobs:
     games_social_listening_weekly_summary_report:
-      name: ${var.prefix} - Games Social Listening - Weekly Summary Report
+      name: Games Social Listening - Weekly Summary Report
       trigger:
         pause_status: PAUSED
         periodic:

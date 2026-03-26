@@ -1,7 +1,7 @@
 resources:
   jobs:
     games_social_listening_job:
-      name: ${var.prefix} - Games Social Listening Job
+      name: Games Social Listening Job
       tasks:
         - task_key: pull_source_content
           notebook_task:
