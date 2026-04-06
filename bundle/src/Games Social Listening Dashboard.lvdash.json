@@ -28,8 +28,8 @@
           }
         }
       ],
-      "catalog": "${var.catalog}",
-      "schema": "${var.schema}"
+      "catalog": "",
+      "schema": ""
     },
     {
       "name": "f7c0e188",
@@ -84,8 +84,8 @@
           }
         }
       ],
-      "catalog": "${var.catalog}",
-      "schema": "${var.schema}"
+      "catalog": "",
+      "schema": ""
     },
     {
       "name": "38128c95",
@@ -96,8 +96,8 @@
         "FROM\n",
         " feedback_content_gold"
       ],
-      "catalog": "${var.catalog}",
-      "schema": "${var.schema}"
+      "catalog": "",
+      "schema": ""
     },
     {
       "name": "934739a7",
@@ -172,8 +172,8 @@
           }
         }
       ],
-      "catalog": "${var.catalog}",
-      "schema": "${var.schema}"
+      "catalog": "",
+      "schema": ""
     },
     {
       "name": "d93acedf",
@@ -186,8 +186,8 @@
         "group by\n",
         "  category"
       ],
-      "catalog": "${var.catalog}",
-      "schema": "${var.schema}"
+      "catalog": "",
+      "schema": ""
     },
     {
       "name": "ce82824a",
@@ -318,8 +318,8 @@
           }
         }
       ],
-      "catalog": "${var.catalog}",
-      "schema": "${var.schema}"
+      "catalog": "",
+      "schema": ""
     },
     {
       "name": "fca51f69",
@@ -394,8 +394,8 @@
           }
         }
       ],
-      "catalog": "${var.catalog}",
-      "schema": "${var.schema}"
+      "catalog": "",
+      "schema": ""
     },
     {
       "name": "93b86851",
@@ -406,8 +406,8 @@
         "FROM\n",
         " feedback_content_gold"
       ],
-      "catalog": "${var.catalog}",
-      "schema": "${var.schema}"
+      "catalog": "",
+      "schema": ""
     }
   ],
   "pages": [
