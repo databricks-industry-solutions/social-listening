@@ -10,7 +10,7 @@ markdown==3.10
 pandas==2.2.3
 plotly==6.5.0
 praw==7.8.1
-python-dotenv==1.2.1
+python-dotenv==1.2.2
 pyyaml==6.0.1
 rapidfuzz==3.13.0
 sqlparse==0.5.4
