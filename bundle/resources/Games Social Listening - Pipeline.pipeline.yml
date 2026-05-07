@@ -1,7 +1,7 @@
 resources:
   pipelines:
     games_social_listening_pipeline:
-      name: ${var.prefix} - Games Social Listening Pipeline
+      name: Games Social Listening Pipeline
       libraries:
         - glob:
             include: ../src/pipeline/transformations/**

@@ -23,11 +23,11 @@ variables:
     description: warehouse for reporting
   prefix:
     # Lowercase letters, numbers, and dashes only
-    description: prefix for all asset display names
+    description: prefix of app name
 
 targets:
   demo:
-    mode: production
+    mode: development
     default: true
     workspace:
       root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
