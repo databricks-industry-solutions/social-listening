@@ -1,17 +1,17 @@
 {
-  "version": 1,
+  "version": 2,
   "config": {
     "sample_questions": [
-      {
-        "id": "01f0b46848821efbaa1e1f5fcaa0adc7",
-        "question": [
-          "What are the top 5 categories with the highest sentiment for the game GTA?"
-        ]
-      },
       {
         "id": "01f0b468488116499f9f9f64dde9384e",
         "question": [
           "What are the most common topics with negative sentiment about bugs or glitches for the game GTA?"
+        ]
+      },
+      {
+        "id": "01f0b46848821efbaa1e1f5fcaa0adc7",
+        "question": [
+          "What are the top 5 categories with the highest sentiment for the game GTA?"
         ]
       }
     ]
@@ -23,50 +23,50 @@
         "column_configs": [
           {
             "column_name": "ai_summary",
-            "get_example_values": true,
-            "build_value_dictionary": true
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
           },
           {
             "column_name": "author_id",
-            "get_example_values": true
+            "enable_format_assistance": true
           },
           {
             "column_name": "content_id",
-            "get_example_values": true
+            "enable_format_assistance": true
           },
           {
             "column_name": "content_metadata",
-            "get_example_values": true,
-            "build_value_dictionary": true
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
           },
           {
             "column_name": "content_text",
-            "get_example_values": true,
-            "build_value_dictionary": true
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
           },
           {
             "column_name": "content_type",
-            "get_example_values": true,
-            "build_value_dictionary": true
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
           },
           {
             "column_name": "game_name",
-            "get_example_values": true,
-            "build_value_dictionary": true
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
           },
           {
             "column_name": "overall_sentiment",
-            "get_example_values": true,
-            "build_value_dictionary": true
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
           },
           {
             "column_name": "timestamp",
-            "get_example_values": true
+            "enable_format_assistance": true
           },
           {
             "column_name": "translated_content_text",
-            "get_example_values": true,
-            "build_value_dictionary": true
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
           }
         ]
       },
@@ -75,27 +75,27 @@
         "column_configs": [
           {
             "column_name": "category",
-            "get_example_values": true,
-            "build_value_dictionary": true
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
           },
           {
             "column_name": "content_id",
-            "get_example_values": true
+            "enable_format_assistance": true
           },
           {
             "column_name": "game_name",
-            "get_example_values": true,
-            "build_value_dictionary": true
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
           },
           {
             "column_name": "sentiment",
-            "get_example_values": true,
-            "build_value_dictionary": true
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
           },
           {
             "column_name": "sub_category",
-            "get_example_values": true,
-            "build_value_dictionary": true
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
           }
         ]
       }
@@ -115,7 +115,7 @@
           "What are the top 5 categories with the highest sentiment for the game GTA?"
         ],
         "sql": [
-          "select category, count(*) as num_pos_content from {UC_SCHEMA}.feedback_content_sentiment_gold\n",
+          "select category, count(*) as num_pos_content from cmegdemos_catalog.games_social_listening.feedback_content_sentiment_gold\n",
           "where sentiment  = \"positive\" and game_name = 'GTA'\n",
           "group by category\n",
           "order by count(*) desc\n",
@@ -130,24 +130,24 @@
         "sql": [
           "WITH filtered_reviews AS (\n",
           "  SELECT\n",
-          "   `overall_sentiment` AS `sentiment`,\n",
-          "    `timestamp`\n",
+          "   overall_sentiment AS sentiment,\n",
+          "    timestamp\n",
           "  FROM\n",
-          "      {UC_SCHEMA}.feedback_content_gold\n",
+          "      cmegdemos_catalog.games_social_listening.feedback_content_gold\n",
           "  WHERE\n",
-          "    `game_name` = 'Call of Duty: Black Ops 6'\n",
-          "    AND `translated_content_text` ILIKE '%zombies%'\n",
-          "    AND `overall_sentiment`is not null\n",
+          "    game_name = 'Call of Duty: Black Ops 6'\n",
+          "    AND translated_content_text ILIKE '%zombies%'\n",
+          "    AND overall_sentimentis not null\n",
           ")\n",
           "SELECT\n",
-          "  `sentiment`,\n",
-          "  DATE_TRUNC('WEEK', `timestamp`) AS `week`,\n",
+          "  sentiment,\n",
+          "  DATE_TRUNC('WEEK', timestamp) AS week,\n",
           "  COUNT(*)\n",
           "FROM\n",
           "  filtered_reviews\n",
           "GROUP BY\n",
-          "  `sentiment`,\n",
-          "  `week`"
+          "  sentiment,\n",
+          "  week"
         ]
       },
       {
@@ -160,17 +160,17 @@
           "  SELECT\n",
           "    *\n",
           "  FROM\n",
-          "    {UC_SCHEMA}.feedback_content_gold\n",
+          "    cmegdemos_catalog.games_social_listening.feedback_content_gold\n",
           "  where\n",
           "    game_name = 'GTA'\n",
           ")\n",
           "SELECT\n",
-          "  COUNT(`overall_sentiment`) `count(overall_sentiment)`,\n",
-          "  `overall_sentiment` `overall_sentiment`\n",
+          "  COUNT(overall_sentiment) count(overall_sentiment),\n",
+          "  overall_sentiment overall_sentiment\n",
           "FROM\n",
           "  q\n",
           "GROUP BY\n",
-          "  `overall_sentiment`"
+          "  overall_sentiment"
         ]
       },
       {
@@ -187,8 +187,8 @@
           "    sentiment_t.category,\n",
           "    sentiment_t.sub_category\n",
           "  from\n",
-          "    {UC_SCHEMA}.feedback_content_sentiment_gold as sentiment_t\n",
-          "    inner join {UC_SCHEMA}.feedback_content_gold as review on sentiment_t.content_id = review.content_id\n",
+          "    cmegdemos_catalog.games_social_listening.feedback_content_sentiment_gold as sentiment_t\n",
+          "    inner join cmegdemos_catalog.games_social_listening.feedback_content_gold as review on sentiment_t.content_id = review.content_id\n",
           "  where\n",
           "    review.game_name = 'GTA'\n",
           ")\n",
@@ -211,8 +211,8 @@
           "select \n",
           "    count(*) as num_of_content,\n",
           "    sentiment.sub_category\n",
-          "from {UC_SCHEMA}.feedback_content_sentiment_gold as sentiment\n",
-          "inner join {UC_SCHEMA}.feedback_content_gold as review\n",
+          "from cmegdemos_catalog.games_social_listening.feedback_content_sentiment_gold as sentiment\n",
+          "inner join cmegdemos_catalog.games_social_listening.feedback_content_gold as review\n",
           "    on sentiment.content_id = review.content_id\n",
           "where review.game_name = 'Apex Legends' and sentiment.category = 'bugs_glitches_techissues' and sentiment.sentiment = 'negative'\n",
           "group by sub_category\n",
@@ -234,7 +234,7 @@
           "alias": "feedback_content_sentiment_gold"
         },
         "sql": [
-          "`feedback_content_gold`.`content_id` = `feedback_content_sentiment_gold`.`content_id`",
+          "feedback_content_gold.content_id = feedback_content_sentiment_gold.content_id",
           "--rt=FROM_RELATIONSHIP_TYPE_ONE_TO_MANY--"
         ],
         "instruction": [
