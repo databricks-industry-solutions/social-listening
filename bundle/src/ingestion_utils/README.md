@@ -45,6 +45,9 @@ To modify sampling behavior, either edit the classes in this directory or simply
 
 **Note**: Larger sample sizes will increase processing time and costs for AI translation and sentiment extraction.
 
+#### Example: Remove Sampling from Steam
+To remove sampling from the Steam ingestion, simply call the `SteamIngestor::ingest()` function with the argument `sampling=False`. The class may be found at `../bundle/src/ingestion_utils/steam_ingestor.py`, and the function call to change is the `ingest()` call in the `../Abstracted_Ingestion` notebook.
+
 ## Adding a New Platform
 
 To add a new platform (e.g., YouTube comments):

@@ -102,7 +102,7 @@ The weekly summary report job is already configured with a schedule to update AI
 
 By default, the demo limits ingestion to the equivalent of 2,000 reviews per game for performance and cost optimization. For production use cases requiring full data coverage, you may want to remove or adjust this sampling.
 
-For more information on sampling strategy and configuration, see the [Ingestion Sampling Documentation](../src/ingestion_utils/README.md#sampling-strategy).
+For more information on sampling strategy and configuration, see the [Ingestion Sampling Documentation](../bundle/src/ingestion_utils/README.md#sampling-strategy).
 
 ---
 
@@ -120,6 +120,9 @@ To enable ingestion from Steam and Reddit, you'll need to provide API keys to au
 - Reddit:
   - Sign up to create a free Developer account [here](https://developers.reddit.com/).
   - This will get you these required keys: `client_id`, `client_secret`, `user_agent`.
+  - **Update**: Reddit began aggressively locking down access to their API late 2025, so this method no longer works.
+    - If you already have the above keys from before, then they should continue to work and you can proceed. 
+    - If you do not already have the above keys, the community consensus is that it is effectively impossible to attain them. Reach out to your Databricks team for support with alternative options.
 
 #### 1. Add Your Keys
 - Option 1: In-App Settings
