@@ -146,12 +146,14 @@ class DataLoader:
         return self._load_data(query, use_user_token)
 
     def load_game_review_reports(self, game_name: str, use_user_token: bool=False) -> pd.DataFrame:
-        """Load game review reports from the database."""
+        """Load game review reports from the database, returning one row per distinct
+        persona with the latest report_date."""
         logger.info(f"Loading game review reports for game: {game_name}")
         # clean_game_name = self.clean_game_name(game_name)
         query = f"""
-            SELECT * FROM {self.catalog_name}.{self.schema_name}.{self.game_review_reports_table_name} 
+            SELECT * FROM {self.catalog_name}.{self.schema_name}.{self.game_review_reports_table_name}
             WHERE game_name = "{game_name}"
+            QUALIFY ROW_NUMBER() OVER (PARTITION BY persona ORDER BY report_date DESC) = 1
             """
         return self._load_data(query, use_user_token)
 
