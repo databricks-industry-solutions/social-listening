@@ -46,7 +46,13 @@ To modify sampling behavior, either edit the classes in this directory or simply
 **Note**: Larger sample sizes will increase processing time and costs for AI translation and sentiment extraction.
 
 #### Example: Remove Sampling from Steam
-To remove sampling from the Steam ingestion, simply call the `SteamIngestor::ingest()` function with the argument `sampling=False`. The class may be found at `../bundle/src/ingestion_utils/steam_ingestor.py`, and the function call to change is the `ingest()` call in the `../Abstracted_Ingestion` notebook.
+To remove sampling from the Steam ingestion, simply call the `SteamIngestor::ingest()` function with the argument `sampling=False`.
+- The class may be found at `../bundle/src/ingestion_utils/steam_ingestor.py`, and the function call to change is the `ingest()` call in the `../Abstracted_Ingestion` notebook.
+- To get all reviews, be sure to also set `num_reviews` to a number greater or equal to the actual number of reviews. For example, you can just set `num_reviews` equal to an arbitrary large number like `10_000_000` (ingestion will stop automatically when there are no more reviews)
+
+#### Example: Remove Sampling from Reddit
+Call the `RedditIngestor::ingest()` function with `max_posts=None` and `max_comments_per_post=None`.
+
 
 ## Adding a New Platform
 

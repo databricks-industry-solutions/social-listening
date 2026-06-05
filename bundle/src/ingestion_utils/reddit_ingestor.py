@@ -157,8 +157,10 @@ class RedditIngestor(DataIngestor):
             post_title = post.title
             post_text = post.selftext if hasattr(post, "selftext") else ""
 
-            max_comments_per_replacement = 100 # See replace_more() PRAW documentation
-            replace_more_limit = math.ceil(max_comments_per_post / max_comments_per_replacement)
+            replace_more_limit = None
+            if max_comments_per_post is not None:
+                max_comments_per_replacement = 100 # See replace_more() PRAW documentation
+                replace_more_limit = math.ceil(max_comments_per_post / max_comments_per_replacement)
             post.comments.replace_more(limit=replace_more_limit)
             comments_flat = post.comments.list() # List of PRAW Comment objects
             new_comment_rows = ( # Not an exhaustive list of fields; note that this must match comment_schema in ingest()
