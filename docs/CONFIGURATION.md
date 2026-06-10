@@ -6,6 +6,7 @@ This guide covers **customizing** the Games Social Listening demo and **producti
 
 **Moving to Long Term Usage**
 - [DAB Deployment](#dab-deployment)
+- [Resource Naming and Prefixes](#resource-naming-and-prefixes)
 - [Enable Job Scheduling](#enable-job-scheduling)
 - [Remove Sampling (Optional)](#remove-sampling-optional)
 
@@ -77,6 +78,72 @@ databricks bundle destroy --target prod
 - Create the Genie Space via API
 - Provide permissions to the App Service Principal to the catalog, job, and Genie Space
 - Update the app configurations (`src/app/config.yaml`) with the deployed resources from DAB (Job ID, Genie Space ID, Dashboard URL, etc.)
+
+### Resource Naming and Prefixes
+
+You may notice deployed resources (job, pipeline, dashboard, etc.) are named with a `[dev john_smith]` style prefix, even when you set a custom `prefix` in `Demo_Setup.ipynb` (e.g. `my-prefix`). This is expected — there are **two different naming mechanisms** at play:
+
+| Mechanism | Where it comes from | What it affects |
+|-----------|---------------------|-----------------|
+| The `prefix` **variable** | Set in `Demo_Setup.ipynb` / `databricks.yml` | Used inside resource definitions for names like the app name (`${var.prefix}_social_listening_app`) |
+| The `[dev <username>]` **prefix** | Added automatically by DAB **development mode** | Prepended to jobs, pipelines, dashboards, etc. |
+
+The `[dev <username>]` prefix is added by DAB's [development mode preset](https://docs.databricks.com/en/dev-tools/bundles/deployment-modes.html). When a target uses `mode: development`, DAB automatically prepends `[dev <short_name>]` to resource names (and also pauses schedules/triggers, sets concurrent run limits, etc.). This is by design, so multiple users can deploy the same bundle into one workspace without colliding.
+
+So the `prefix` variable is applied where the resource definitions reference `${var.prefix}`. The `[dev ...]` is a separate, automatic development-mode behavior.
+
+#### Option 1: Set a custom prefix in development mode
+
+Override the `name_prefix` preset on the target in `bundle/databricks.yml`. This replaces the default `[dev <username>]`:
+
+```yaml
+targets:
+  demo:
+    mode: development
+    default: true
+    presets:
+      name_prefix: "my-prefix_"     # replaces [dev <username>]; use "${var.prefix}_" to reuse your variable
+    workspace:
+      root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+```
+
+To remove the prefix entirely (no `[dev ...]` and no custom string), set it to an empty string:
+
+```yaml
+    presets:
+      name_prefix: ""
+```
+
+#### Option 2: Use production mode
+
+Production mode (`mode: production`) drops the `[dev <username>]` prefix automatically and unpauses schedules. This is the recommended path for long-term/shared deployments. Resource names will then come solely from the resource definitions (including your `${var.prefix}` where referenced):
+
+```yaml
+targets:
+  prod:
+    mode: production
+    workspace:
+      host: https://your-workspace.cloud.databricks.com
+      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: prod_social_listening
+      schema: player_feedback
+      warehouse_id: abc123def456
+      prefix: prod                  # used wherever resources reference ${var.prefix}
+```
+
+> **Note:** Production mode enforces stricter settings (e.g. unpaused schedules, run-as restrictions). If you only want cleaner names without the other production-mode changes, prefer the `presets.name_prefix` override in Option 1.
+
+#### Important: redeploying does not rename existing resources
+
+Changing the prefix and running `databricks bundle deploy` creates **new** resources under the new names. The old `[dev <username>]`-prefixed resources are only cleaned up if the bundle still tracks them in its deployment state, so you may end up with duplicates. The cleanest path is to **destroy the current deployment first**, then change the prefix and redeploy:
+
+```bash
+# From the bundle directory, using the same vars you deployed with
+databricks bundle destroy --auto-approve
+# ...change the prefix in databricks.yml, then:
+databricks bundle deploy
+```
 
 ### Enable Job Scheduling
 
