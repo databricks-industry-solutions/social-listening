@@ -17,6 +17,7 @@ This guide covers **customizing** the Games Social Listening demo and **producti
 - [Sentiment Categories](#sentiment-categories)
 - [Report Personas](#report-personas)
 - [Genie Space](#genie-space)
+- [Using Classic Compute](#using-classic-compute)
 
 **App Configuration**
 - [App Configuration and Customization](#app-configuration-and-customization)
@@ -359,6 +360,119 @@ If Genie Space already created:
 If Genie Space not yet created:
 1. Update the contents of `bundle/src/genie_space/genie_instructions.txt`
 2. Re-run `Demo_Setup.ipynb`
+
+### Using Classic Compute
+
+This demo is meant to use Serverless compute, and Serverless compute is also recommended for its ease of use, autoscaling, etc. If you must use classic compute, you will need to edit the resource YAML definitions as described below.
+
+The `Demo_Setup.ipynb` notebook itself can run on either Serverless or a classic all-purpose cluster with no changes — it is pure orchestration (CLI, SDK, and `spark.sql` calls). Only the **deployed** pipeline and jobs are pinned to Serverless, so those are what you change here.
+
+> **Important — AI functions are the main risk, not the cluster wiring.** The pipeline uses `ai_translate` and `ai_query` (against a Foundation Model endpoint). These require a recent Databricks Runtime with **Photon** enabled. Use a recent LTS runtime (15.4 LTS or later) and `data_security_mode: SINGLE_USER` so the pipeline/jobs can access Unity Catalog and the model serving endpoint. On Serverless these worked automatically; on classic compute you are responsible for choosing a runtime that supports them.
+>
+> **Note on cloud-specific values.** The `node_type_id` values below are AWS examples (`m5d.large`). Swap them for your cloud — Azure: `Standard_DS3_v2`, GCP: `n2-standard-4`. Consider promoting `node_type_id` and `spark_version` to bundle variables in `databricks.yml` so they aren't hardcoded across multiple files.
+
+#### 1. Pipeline (`bundle/resources/Games Social Listening - Pipeline.pipeline.yml`)
+
+Remove `serverless: true` and add a classic `clusters` block. A pipeline always runs on its own compute (it is a Lakeflow Declarative Pipeline, not the all-purpose cluster), so "classic" here means giving it a classic cluster spec:
+
+```yaml
+resources:
+  pipelines:
+    games_social_listening_pipeline:
+      name: Games Social Listening Pipeline
+      libraries:
+        - glob:
+            include: ../src/pipeline/transformations/**
+      catalog: ${var.catalog}
+      schema: ${var.schema}
+      root_path: ../src/pipeline/
+      # serverless: true        <-- REMOVE this line
+      channel: CURRENT          # keep CURRENT so ai_translate/ai_query are available
+      photon: true              # recommended for AI functions + performance
+      edition: ADVANCED
+      clusters:
+        - label: default
+          node_type_id: m5d.large          # AWS example — swap per cloud
+          driver_node_type_id: m5d.large
+          autoscale:
+            min_workers: 1
+            max_workers: 3
+            mode: ENHANCED
+```
+
+Note: pipelines take **no `spark_version`** — the runtime is controlled by `channel`. Keep it set to `CURRENT`.
+
+#### 2. Main Job (`bundle/resources/Games Social Listening - Job.job.yml`)
+
+The two `notebook_task`s (`pull_source_content` and `summary_report_gen`) currently have no compute defined, so they default to Serverless. Add a shared classic `job_clusters` block and attach it to each notebook task via `job_cluster_key`.
+
+Leave the other tasks unchanged:
+- `pipeline_task` (`sentiment-extraction`) uses the pipeline's own compute (configured above)
+- `condition_task` (`new_game_check`) needs no compute
+- `dashboard_task` (`refresh_dashboard`) uses the SQL warehouse (`warehouse_id`)
+
+```yaml
+resources:
+  jobs:
+    games_social_listening_job:
+      name: Games Social Listening Job
+      job_clusters:                          # <-- ADD this block
+        - job_cluster_key: shared_classic
+          new_cluster:
+            spark_version: 15.4.x-scala2.12  # recent LTS; required for ai_query support
+            node_type_id: m5d.large          # swap per cloud
+            data_security_mode: SINGLE_USER  # needed for Unity Catalog + model serving access
+            autoscale:
+              min_workers: 1
+              max_workers: 2
+      tasks:
+        - task_key: pull_source_content
+          job_cluster_key: shared_classic    # <-- ADD to this notebook_task
+          notebook_task:
+            ...
+        # sentiment-extraction (pipeline_task)  -> unchanged
+        # new_game_check (condition_task)        -> unchanged
+        - task_key: summary_report_gen
+          job_cluster_key: shared_classic    # <-- ADD to this notebook_task
+          notebook_task:
+            ...
+        # refresh_dashboard (dashboard_task)     -> unchanged (uses warehouse_id)
+```
+
+Only the two `notebook_task` entries get a `job_cluster_key`.
+
+#### 3. Summary Report Job (`bundle/resources/Games Social Listening - Weekly Summary Report Job.job.yml`)
+
+This job's single `report_generator` notebook task also defaults to Serverless. Apply the same pattern:
+
+```yaml
+resources:
+  jobs:
+    games_social_listening_weekly_summary_report:
+      name: Games Social Listening - Weekly Summary Report
+      job_clusters:                          # <-- ADD this block
+        - job_cluster_key: shared_classic
+          new_cluster:
+            spark_version: 15.4.x-scala2.12
+            node_type_id: m5d.large
+            data_security_mode: SINGLE_USER
+            num_workers: 1
+      tasks:
+        - task_key: report_generator
+          job_cluster_key: shared_classic    # <-- ADD
+          notebook_task:
+            ...
+```
+
+#### What stays on managed/Serverless compute regardless
+
+These cannot be moved to classic compute:
+- The **dashboard refresh** and **Genie Space** still require the SQL warehouse (`warehouse_id`) — unchanged.
+- The **Databricks App** runs on its own managed app infrastructure — there is no classic option for it.
+
+#### Cheaper alternative for demos
+
+Instead of provisioning a `new_cluster`, you can point the notebook tasks at an existing all-purpose cluster with `existing_cluster_id: <cluster-id>` (or a bundle variable) in place of `job_cluster_key`. This is fine for a demo but not recommended for production. The pipeline still needs its own `clusters` block either way.
 
 ---
 

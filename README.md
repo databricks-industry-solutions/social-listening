@@ -30,6 +30,12 @@ This solution uses [Databricks Asset Bundle](https://docs.databricks.com/en/dev-
 
 - [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/) installed (optional, for manual deployment)
 - [Serverless compute](https://docs.databricks.com/aws/en/compute/serverless/) available
+    - If you don't see Serverless as an option in the notebook, ensure you have these [Workspace Previews](https://docs.databricks.com/aws/en/admin/workspace-settings/manage-previews) enabled:
+        - Serverless Compute for Delta Live Tables
+        - Serverless Compute for Workflows and Notebooks
+        - (You may see slightly different names, e.g. "Jobs" instead of "Workflows", "Declarative Pipelines" instead of "Delta Live Tables")
+    - If you cannot use Serverless and must use classic compute, see the guidance in [`CONFIGURATION.md`](/docs/CONFIGURATION.md#using-classic-compute).
+
 - [SQL Warehouse](https://docs.databricks.com/aws/en/compute/sql-warehouse/) for dashboard and app queries
 
 ### Demo Quick Start (Recommended)
@@ -66,32 +72,33 @@ Note that if you want to have multiple demo apps in the same Databricks workspac
 cmeg_player_feedback_app/
 ├── databricks.yml                    # Databricks Asset Bundle configuration
 ├── Demo_Setup.ipynb                  # Automated installation notebook
-├── resources/                        # DAB resource definitions
-│   ├── Games Social Listening - Job.job.yml
-│   ├── Games Social Listening - Pipeline.pipeline.yml
-│   ├── Games Social Listening - Dashboard.dashboard.yml
-│   └── Games Social Listening - App.app.yml
-├── src/
-│   ├── Abstracted_Ingestion.ipynb   # Multi-platform ingestion notebook
-│   ├── Summary_Report_Generator.ipynb  # AI report generation
-│   ├── app/                          # FastAPI web application
-│   │   ├── main.py                   # App entry point
-│   │   ├── config.yaml               # App configuration
-│   │   ├── routers/                  # API endpoints
-│   │   ├── utils/                    # Helper functions
-│   │   └── templates/                # UI templates
-│   ├── pipeline/                     # Spark Declarative Pipeline transformations
-│   │   └── transformations/
-│   │       ├── 01_ai_translation.py
-│   │       ├── 02_ai_sentiment_extraction.py
-│   │       ├── 03_parse_sentiment.py
-│   │       └── 04_reporting_layer.py
-│   ├── ingestion_utils/              # Platform-specific ingestors
-│   │   ├── steam_ingestor.py
-│   │   ├── google_play_ingestor.py
-│   │   └── reddit_ingestor.py
-│   └── config/                       # Configuration files
-│       └── config.yaml               # Sentiment categories & personas
+├── bundle/
+│   ├── resources/                        # DAB resource definitions
+│   │   ├── Games Social Listening - Job.job.yml
+│   │   ├── Games Social Listening - Pipeline.pipeline.yml
+│   │   ├── Games Social Listening - Dashboard.dashboard.yml
+│   │   └── Games Social Listening - App.app.yml
+│   └── src/
+│       ├── Abstracted_Ingestion.ipynb   # Multi-platform ingestion notebook
+│       ├── Summary_Report_Generator.ipynb  # AI report generation
+│       ├── app/                          # FastAPI web application
+│       │   ├── main.py                   # App entry point
+│       │   ├── config.yaml               # App configuration
+│       │   ├── routers/                  # API endpoints
+│       │   ├── utils/                    # Helper functions
+│       │   └── templates/                # UI templates
+│       ├── pipeline/                     # Spark Declarative Pipeline transformations
+│       │   └── transformations/
+│       │       ├── 01_ai_translation.py
+│       │       ├── 02_ai_sentiment_extraction.py
+│       │       ├── 03_parse_sentiment.py
+│       │       └── 04_reporting_layer.py
+│       ├── ingestion_utils/              # Platform-specific ingestors
+│       │   ├── steam_ingestor.py
+│       │   ├── google_play_ingestor.py
+│       │   └── reddit_ingestor.py
+│       └── config/                       # Configuration files
+│           └── config.yaml               # Sentiment categories & personas
 └── docs/                             # Documentation
     └── CONFIGURATION.md              # Customization & production guide
 ```
@@ -134,7 +141,7 @@ The demo implements a **6-stage social listening analysis**:
 | **Orchestration Job** | Daily/New Game content ingestion + pipeline execution + dashboard refresh + generate summary report for new games |
 | **AI/BI Dashboard** | Interactive analytics with filters, visualizations, and drill into sub topic sentiment |
 | **Genie Space** | Natural language queries on player feedback data |
-| **Weekly Summary Report Job** | Update the AI-generated summary reports for all tracked games |
+| **Summary Report Job** | Update the AI-generated summary reports for all tracked games |
 | **Databricks App** | Add games and explore insights |
 
 ## ⚙️ Configuration and Customization
