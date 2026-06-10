@@ -127,16 +127,7 @@
           "displayName": "game_name",
           "keyword": "game_name",
           "dataType": "STRING",
-          "defaultSelection": {
-            "values": {
-              "dataType": "STRING",
-              "values": [
-                {
-                  "value": "Pokemon Go"
-                }
-              ]
-            }
-          }
+          "defaultSelection": {}
         },
         {
           "displayName": "date_range",
@@ -243,16 +234,7 @@
           "displayName": "game_name",
           "keyword": "game_name",
           "dataType": "STRING",
-          "defaultSelection": {
-            "values": {
-              "dataType": "STRING",
-              "values": [
-                {
-                  "value": "Pokemon Go"
-                }
-              ]
-            }
-          }
+          "defaultSelection": {}
         },
         {
           "displayName": "category",
@@ -382,16 +364,7 @@
           "displayName": "game_name",
           "keyword": "game_name",
           "dataType": "STRING",
-          "defaultSelection": {
-            "values": {
-              "dataType": "STRING",
-              "values": [
-                {
-                  "value": "Pokemon Go"
-                }
-              ]
-            }
-          }
+          "defaultSelection": {}
         }
       ],
       "catalog": "",
@@ -855,13 +828,9 @@
               },
               "selection": {
                 "defaultSelection": {
-                  "values": {
-                    "dataType": "STRING",
-                    "values": [
-                      {
-                        "value": "Pokemon Go"
-                      }
-                    ]
+                  "operator": {
+                    "operator": "OR",
+                    "args": []
                   }
                 }
               }
