@@ -50,6 +50,7 @@ This solution uses [Databricks Asset Bundle](https://docs.databricks.com/en/dev-
         - Configure with your workspace settings
         - Load sample data and execute sentiment analysis (Pokemon Go from Google Play)
     - Should take 10-15 minutes
+    - Note: by default the Demo Setup notebook will ingest a small amount of data from Pokemon Go on the Google Play Store (to have some initial data to play with). If you want this initial ingestion to ingest data for a different game/platform instead, modify the `parameter` values at the bottom of `bundle/resources/Games Social Listening - Job.job.yml`.
 5. **Access the deployed app** in your Databricks workspace!
     - Left sidebar > Compute > Apps
 
@@ -169,9 +170,10 @@ You can also load data from your own bronze table in Unity Catalog, provided it 
 
 ## Demo Teardown
 
-To destroy all demo resources, uncomment the last two cells of the `Demo_Setup.ipynb` and run both to:
+To destroy all demo resources, uncomment the last few cells of the `Demo_Setup.ipynb` and run each to:
 - Destroy resources managed by DAB
 - Destroy Genie Space via API
+- Destroy secret scope via SDK
 
 ## ⚠️ Disclaimer
 

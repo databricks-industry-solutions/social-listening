@@ -79,24 +79,37 @@ databricks bundle destroy --target prod
 
 ### Enable Job Scheduling
 
-The Social Listening jobs can be configured to bring in new reviews on a regular cadence. Both the main job and the weekly summary report job have parameters to specify if the `update_type` is a `NEW_GAME` or `REFRESH`.
+To run data ingestion on a regular schedule or at specific times instead of being manually triggered via the app UI, you can follow these steps:
 
-In `resources/Games Social Listening - Job.job.yml`, set `pause_status: UNPAUSED`:
+1. In Databricks, clone the job that was created by the bundle.
+1. Modify the schedules/triggers as desired.
+1. Add job parameters to match the ingestion schedule you want.
+1. Read the job parameters in the task notebooks.
 
-```yaml
-resources:
-  jobs:
-    Games_Social_Listening_Job:
-      name: ${var.prefix}_Games_Social_Listening
-      tasks:
-        # ... tasks ...
-      schedule:
-        quartz_cron_expression: "0 0 8 * * ?"  # Daily at 8 AM ET
-        timezone_id: "America/New_York"
-        pause_status: UNPAUSED  # Change from PAUSED
+#### Steam Example
+For example, for Steam you could add a job parameter called `steam_num_past_days`.
+In `Abstracted Ingestion`, you could add this code snippet to read the widget value and then pass it as the `over_past_days` value of the SteamIngestor::ingest() call:
+```python
+dbutils.widgets.text("steam_over_past_days", "", "Steam Over Past Days")
+steam_over_past_days = dbutils.widgets.get("steam_over_past_days")
+if steam_over_past_days != "":
+  # Note: can do a more rigorous check for float-conversion via try-except 
+  steam_over_past_days = float(steam_over_past_days)
+else:
+  steam_over_past_days = None
 ```
 
-The weekly summary report job is already configured with a schedule to update AI-generated reports weekly, but this can be updated if necessary. Simply update the `pause_status` from `PAUSED` to `UNPAUSED`.
+Then, add the same snippet in `Summary_Report_Generator` as well as the following additional snippet to compute the `start_date` of the persona reports:
+```python
+    from datetime import datetime, timedelta
+    if steam_over_past_days:
+        start_date = datetime.now() - timedelta(days=steam_over_past_days)
+        start_date = start_date.strftime("%Y-%m-%d")
+```
+
+Note that you should keep the default value of the widget empty if you don't want the app's original job from the bundle to be affected.
+
+Additionally, note the app will always display the most recent report for each persona (regardless of which job triggered the Summary Report generation task).
 
 ### Remove Sampling (Optional)
 
@@ -237,7 +250,7 @@ Existing supported platforms:
 
 ### LLM Endpoint Configuration
 
-The solution uses Databricks Foundation Model APIs for AI-powered sentiment extraction and report generation. You can customize the LLM endpoint and parameters in `src/config/config.yaml`.
+The solution uses Databricks Foundation Model APIs for AI-powered sentiment extraction and report generation. You can customize the LLM endpoint and parameters in `bundle/src/config/config.yaml`.
 
 #### Default Configuration
 
@@ -275,7 +288,7 @@ Sentiment categories define the topics extracted from the content.
 
 #### Default Categories
 
-Defined in `src/config/config.yaml`:
+Defined in `bundle/src/config/config.yaml`:
 
 ```yaml
 sentiment_categories:
@@ -297,9 +310,11 @@ sentiment_categories:
 
 #### Customizing Categories
 
-Edit `src/config/config.yaml` to add, remove, or modify categories based on your specific needs.
+Edit `bundle/src/config/config.yaml` to add, remove, or modify categories based on your specific needs.
 
 You should also [update the Genie Space](#genie-space) accordingly afterwards.
+
+Note that if you want to change the categories in the future after already ingesting some data, the Declarative Pipeline will require a full refresh. (Ingested data in the `bronze` table would not need to change. Changing personas or persona prompts only affects the Summary Report generation, so the Declarative Pipeline is unaffected.)
 
 ### Report Personas
 
@@ -307,7 +322,7 @@ AI-generated reports are customized for different personas/stakeholders.
 
 #### Default Personas
 
-Defined in `src/config/config.yaml`:
+Defined in `bundle/src/config/config.yaml`:
 
 ```yaml
 personas:
@@ -326,11 +341,11 @@ personas:
 
 #### Customizing Personas
 
-Add or modify personas in `src/config/config.yaml` to match your organization's roles. Each persona should include:
+Add or modify personas in `bundle/src/config/config.yaml` to match your organization's roles. Each persona should include:
 - `display_text`: The human-readable name shown in the UI
 - `prompt`: The system prompt that defines how the AI generates reports for this persona
 
-You will also need to add matching display names in `src/app/config.yaml`.
+You will also need to add matching display names in `bundle/src/app/config.yaml`.
 
 ### Genie Space
 
@@ -342,14 +357,14 @@ If Genie Space already created:
 3. Ensure the sentiment category list matches your `config.yaml`
 
 If Genie Space not yet created:
-1. Update the contents of `src/genie_space/genie_instructions.txt`
+1. Update the contents of `bundle/src/genie_space/genie_instructions.txt`
 2. Re-run `Demo_Setup.ipynb`
 
 ---
 
 ## App Configuration and Customization
 
-Please see the [src/app/README.md](../src/app/README.md) for detailed configuration and customization options for the application.
+Please see the [bundle/src/app/README.md](../bundle/src/app/README.md) for detailed configuration and customization options for the application.
 
 ---
 
