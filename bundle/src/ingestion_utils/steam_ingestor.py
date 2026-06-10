@@ -1,6 +1,7 @@
 from ingestion_utils.data_ingestor import DataIngestor
 import requests
 from datetime import date
+import time
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as PSF
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, BooleanType, LongType, MapType, TimestampType
@@ -27,12 +28,17 @@ class SteamIngestor(DataIngestor):
             StructField("primarily_steam_deck", BooleanType(), True)
         ])
 
-    def ingest(self, app_id: str, game_name: str, num_reviews: int=10_000, sample: bool=True, start_date: date=None, end_date: date=None) -> DataFrame:
-        """Get reviews via Steam API. App ID can found from the corresponding Steam store page URL."""
-        reviews = self._get_n_reviews(app_id, num_reviews, start_date, end_date)
+    def ingest(self, app_id: str, game_name: str, num_reviews: int=10_000, sample: bool=True, over_past_days: float=None) -> DataFrame:
+        """
+        Get reviews via Steam API. App ID can found from the corresponding Steam store page URL.
+        Set num_reviews to zero or None to get all available reviews.
+        Set over_past_days to get reviews from the last X days (supercedes num_reviews), UTC time.
+            - e.g. over_past_days=0.5 will get reviews from the last 12 hours, calculated by second.
+        """
+        reviews = self._get_n_reviews(app_id, num_reviews, over_past_days)
     
         if len(reviews) == 0:
-            # TODO: log warning here
+            print("Warning: No reviews found.")
             return None
         
         # Sample reviews (to reduce data/compute for speed/demo purposes)
@@ -68,11 +74,18 @@ class SteamIngestor(DataIngestor):
         )
         return output_df
 
-    def _get_n_reviews(self, app_id: str, num_reviews: int=10_000, start_date: date=None, end_date: date=None) -> list:
+    def _get_n_reviews(self, app_id: str, num_reviews: int=10_000, over_past_days: float=None) -> list:
         """
         Retrieve the specified number of reviews from Steam.
-        Both start_date and end_date must provided to get reviews in a certain date range.
-        Currently the reviews are sorted by most recent update time.
+        Set num_reviews to zero or None to get all available reviews.
+        Currently the reviews are sorted by most recent creation time.
+
+        If over_past_days is provided, only get reviews from the last X days, UTC time.
+        Note that the Steam API has a "day_range" parameter, but it only works for filter="all"
+        and has a max value of 365.
+
+        For more documentation on the Steam API params, see:
+        https://partner.steamgames.com/doc/store/getreviews
         """
         params = {
             'json' : 1,
@@ -81,10 +94,16 @@ class SteamIngestor(DataIngestor):
             'review_type' : 'all',
             'purchase_type' : 'all'
         }
-        if start_date and end_date:
-            day_range = (end_date - start_date).days
-            params['day_range'] = day_range
 
+        if num_reviews is None or num_reviews == 0:
+            num_reviews = 10_000_000 # Arbitrary large number to get all reviews
+
+        over_past_secs = 0
+        time_now_s = int(time.time())
+        if over_past_days is not None and over_past_days > 0:
+            num_reviews = 10_000_000 # Arbitrary large number to get all reviews
+            over_past_secs = over_past_days * 24 * 60 * 60
+            
         reviews = []
         cursor = '*' # For pagination
         max_reviews_per_page = 100
@@ -94,6 +113,16 @@ class SteamIngestor(DataIngestor):
             params['num_per_page'] = min(max_reviews_per_page, num_reviews - reviews_fetched)
 
             response = self._get_reviews(app_id, params)
+
+            if over_past_days is not None and over_past_days > 0:
+                if time_now_s - response['reviews'][-1]['timestamp_created'] > over_past_secs:
+                    # Oldest review in this page is outside the over_past_days range,
+                    # so check all reviews in this page and break.
+                    response_valid = [review for review in response['reviews'] if time_now_s - review['timestamp_created'] <= over_past_secs]
+                    reviews += response_valid
+                    print("Reached over_past_days limit")
+                    break
+
             reviews += response['reviews']
             reviews_fetched += len(response['reviews'])
 

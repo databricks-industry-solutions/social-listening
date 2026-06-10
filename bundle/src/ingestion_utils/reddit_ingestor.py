@@ -48,23 +48,25 @@ class RedditIngestor(DataIngestor):
         )
 
     def ingest(self, subreddit_name: str, max_posts: int=500, max_comments_per_post: int=20,
-               start_date: date = None, end_date: date = None) -> DataFrame:
+               time_filter: str="all") -> DataFrame:
         """
         Get reviews via Reddit API.
+
+        time_filter options: "all", "day", "hour", "month", "week", "year"
+
         Currently:
-            - The output dataframe uses the subreddit name as the "game_name".
-            - "start_date" and "end_date" are not used.
+            - The output dataframe uses the subreddit name as the "game_name".        
         """
         post_rows, comment_rows = self._get_content(subreddit_name=subreddit_name, max_posts=max_posts,
-                                                    max_comments_per_post=max_comments_per_post)
+                                                    max_comments_per_post=max_comments_per_post, time_filter=time_filter)
         if len(post_rows) == 0:
-            # Retry with all time filter
-            post_rows, comment_rows = self._get_content(
-                subreddit_name=subreddit_name, time_filter="all", max_posts=max_posts,
-                max_comments_per_post=max_comments_per_post)
-            if len(post_rows) == 0:
-                print("Warning: No posts found in this subreddit.")
-                return None
+            # # Retry with all time filter
+            # post_rows, comment_rows = self._get_content(
+            #     subreddit_name=subreddit_name, time_filter="all", max_posts=max_posts,
+            #     max_comments_per_post=max_comments_per_post)
+            # if len(post_rows) == 0:
+            print("Warning: No posts found.")
+            return None
 
         # Define schemas
         post_schema = StructType([
@@ -121,14 +123,13 @@ class RedditIngestor(DataIngestor):
         )
         return output_df
 
-    def _get_content(self, subreddit_name: str, time_filter: str="year", max_posts: int=500,
+    def _get_content(self, subreddit_name: str, time_filter: str="all", max_posts: int=500,
                      max_comments_per_post: int=20) -> tuple[list]:
         """
         Returns 2 lists: one of post data, one of comment data.
         The comment data list includes associated post information.
 
         Note: currently always sorts by top for both posts and comments.
-        Replies to comments are not extracted currently.
 
         time_filter options: "all", "day", "hour", "month", "week", "year"
         """

@@ -44,7 +44,7 @@ class GooglePlayIngestor(DataIngestor):
         reviews = self._get_reviews(app_id, num_reviews)
     
         if len(reviews) == 0:
-            # TODO: log warning here
+            print("Warning: No reviews found.")
             return None
         
         # Sample reviews (to reduce data/compute for speed/demo purposes)
