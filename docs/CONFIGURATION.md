@@ -145,6 +145,9 @@ databricks bundle destroy --auto-approve
 databricks bundle deploy
 ```
 
+You can also use the "teardown" cells at the bottom of the `Demo_Setup` notebook which will also run `bundle destroy`, but make sure to NOT run the cells that delete your existing data tables if you want to reuse them. 
+
+
 ### Enable Job Scheduling
 
 To run data ingestion on a regular schedule or at specific times instead of being manually triggered via the app UI, you can follow these steps:
