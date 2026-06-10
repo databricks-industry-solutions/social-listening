@@ -115,7 +115,7 @@ class SteamIngestor(DataIngestor):
             response = self._get_reviews(app_id, params)
 
             if over_past_days is not None and over_past_days > 0:
-                if time_now_s - response['reviews'][-1]['timestamp_created'] > over_past_secs:
+                if len(response['reviews']) > 0 and time_now_s - response['reviews'][-1]['timestamp_created'] > over_past_secs:
                     # Oldest review in this page is outside the over_past_days range,
                     # so check all reviews in this page and break.
                     response_valid = [review for review in response['reviews'] if time_now_s - review['timestamp_created'] <= over_past_secs]
