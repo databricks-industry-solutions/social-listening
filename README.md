@@ -182,6 +182,93 @@ To destroy all demo resources, uncomment the last few cells of the `Demo_Setup.i
 - Destroy Genie Space via API
 - Destroy secret scope via SDK
 
+## 🛠️ Troubleshooting
+
+### Catalog names cannot contain hyphens
+
+Unity Catalog catalog names cannot contain hyphens (`-`). A hyphenated catalog name will often pass the bundle-deploy step but then fail later (e.g. in the initial job cell), because the catalog name is used in unquoted SQL such as `GRANT ... ON CATALOG <name>`.
+
+**Fix:** Rename the catalog to remove hyphens — for example, change hyphens to underscores (`my-catalog` → `my_catalog`). The easiest way is via the **Catalog Explorer UI** (Catalog > select the catalog > kebab menu ⋮ > Rename). Then update the `catalog` widget value in `Demo_Setup.ipynb` to match exactly and re-run.
+
+### Errors during the bundle deploy step
+
+If a deploy was interrupted, partially failed, or you manually deleted resources (especially the **App**) via the UI, the bundle's deployment state can become inconsistent. Symptoms include errors like *"an app with the same name already exists"* or errors mentioning a **service principal**. Because Databricks Apps have unique, immutable names and an auto-created service principal — and because the bundle's authoritative Terraform state lives **remotely in the workspace** (not in the local `.databricks` cache) — changing the prefix or deleting the local cache does **not** fix this. You need to remove the orphaned resources and wipe the remote bundle state, then redeploy.
+
+> **Note:** The bundle's remote state lives at `/Workspace/Users/<your-user>/.bundle/games_social_listening/`. Deleting *only* the local `.databricks` folder does not clear it. For more on prefixes and resource naming, see [CONFIGURATION.md#resource-naming-and-prefixes](docs/CONFIGURATION.md#resource-naming-and-prefixes).
+
+**Reset steps:**
+
+1. **Delete the App(s)** and **wait until they fully disappear** before redeploying. This is the only resource that hard-blocks a redeploy (unique name + service principal teardown has a lag).
+2. **(Optional, for cleanliness)** Delete leftover jobs, pipelines, dashboards, and Genie spaces. These don't block a redeploy but otherwise become orphan duplicates.
+3. **Wipe the remote bundle state** by deleting the `games_social_listening` folder under `/Workspace/Users/<your-user>/.bundle/` (the dot-folder is hidden by default in the Workspace UI — enable "show hidden files", and delete only the `games_social_listening` subfolder, not the whole `.bundle` parent).
+4. **(Optional)** Delete the local `.databricks` folder(s) to clear the local cache.
+5. **Re-run `Demo_Setup.ipynb`** with a single consistent prefix and a hyphen-free catalog name (that already exists).
+
+#### Sample code — notebook (Python SDK)
+
+```python
+from databricks.sdk import WorkspaceClient
+from databricks.sdk.errors import NotFound
+import time
+
+w = WorkspaceClient()
+APP_MATCH  = "social-listening"        # app names use hyphens
+NAME_MATCH = "social listening"        # jobs/pipelines/dashboards
+BUNDLE_NAME = "games_social_listening"
+
+# 1. Delete app(s) and WAIT for full teardown (the only hard blocker)
+for a in [a for a in w.apps.list() if APP_MATCH in (a.name or "").lower()]:
+    print("Deleting app:", a.name)
+    w.apps.delete(name=a.name)
+    while True:
+        try:
+            w.apps.get(name=a.name); time.sleep(10)
+        except NotFound:
+            print("  fully deleted:", a.name); break
+
+# 2. (Optional) delete leftover jobs and pipelines
+for j in [j for j in w.jobs.list() if j.settings and NAME_MATCH in (j.settings.name or "").lower()]:
+    w.jobs.delete(job_id=j.job_id); print("Deleted job:", j.settings.name)
+for p in [p for p in w.pipelines.list_pipelines() if NAME_MATCH in (p.name or "").lower()]:
+    w.pipelines.delete(pipeline_id=p.pipeline_id); print("Deleted pipeline:", p.name)
+# (Dashboards: trash in the UI, or via the Lakeview API. Genie spaces: delete in the UI.)
+
+# 3. Wipe the remote bundle state (the actual "start fresh" step)
+user = w.current_user.me().user_name
+state_path = f"/Users/{user}/.bundle/{BUNDLE_NAME}"   # Workspace API path omits /Workspace prefix
+try:
+    w.workspace.delete(state_path, recursive=True)
+    print("Wiped bundle state at", state_path)
+except NotFound:
+    print("No bundle state found at", state_path)
+
+# 4. Re-run Demo_Setup.ipynb with a consistent prefix + hyphen-free catalog.
+```
+
+#### Sample code — Databricks CLI
+
+```bash
+# 1. Delete app(s) — repeat until NONE remain before redeploying
+databricks apps list | grep -i social-listening
+databricks apps delete <app-name>
+databricks apps list | grep -i social-listening      # confirm gone (teardown has a lag)
+
+# 2. (Optional) delete leftover jobs / pipelines / dashboards
+databricks jobs list | grep -i "social listening"
+databricks jobs delete <job-id>
+databricks pipelines list-pipelines | grep -i "social listening"
+databricks pipelines delete <pipeline-id>
+databricks lakeview trash <dashboard-id>
+
+# 3. Wipe the remote bundle state (the actual "start fresh" step)
+databricks workspace delete /Users/<your-user>@<domain>/.bundle/games_social_listening --recursive
+
+# 4. Clear the local cache, then redeploy with a consistent prefix + hyphen-free catalog
+rm -rf .databricks bundle/.databricks src/app/.databricks
+```
+
+After the reset, re-running `Demo_Setup.ipynb` (or `databricks bundle deploy`) will create everything fresh.
+
 ## ⚠️ Disclaimer
 
 Please note the code in this project is provided for your exploration only, and is not formally supported by Databricks with Service Level Agreements (SLAs). It is provided AS-IS and we do not make any guarantees of any kind. Please do not submit a support ticket relating to any issues arising from the use of this project.

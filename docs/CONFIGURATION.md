@@ -18,6 +18,7 @@ This guide covers **customizing** the Games Social Listening demo and **producti
 - [Sentiment Categories](#sentiment-categories)
 - [Report Personas](#report-personas)
 - [Genie Space](#genie-space)
+- [Customizing the Dashboard](#customizing-the-dashboard)
 - [Using Classic Compute](#using-classic-compute)
 
 **App Configuration**
@@ -94,7 +95,11 @@ So the `prefix` variable is applied where the resource definitions reference `${
 
 #### Option 1: Set a custom prefix in development mode
 
-Override the `name_prefix` preset on the target in `bundle/databricks.yml`. This replaces the default `[dev <username>]`:
+Override the `name_prefix` preset on the target in `bundle/databricks.yml`.
+
+> **⚠️ Important:** In `mode: development`, DAB **requires** `name_prefix` to include the current user's name (`${workspace.current_user.short_name}`). This preserves the per-user isolation guarantee of development mode. Setting a static prefix without it (e.g. `name_prefix: "my-prefix_"`) will fail validation with an error like *"prefix should include the username"*. Likewise, you **cannot** set `name_prefix: ""` in development mode. To use a fully custom prefix with no username, use [production mode](#option-2-use-production-mode) instead.
+
+A valid development-mode custom prefix keeps the username substitution:
 
 ```yaml
 targets:
@@ -102,16 +107,9 @@ targets:
     mode: development
     default: true
     presets:
-      name_prefix: "my-prefix_"     # replaces [dev <username>]; use "${var.prefix}_" to reuse your variable
+      name_prefix: "my-prefix [${workspace.current_user.short_name}] "   # username is required in dev mode
     workspace:
       root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
-```
-
-To remove the prefix entirely (no `[dev ...]` and no custom string), set it to an empty string:
-
-```yaml
-    presets:
-      name_prefix: ""
 ```
 
 #### Option 2: Use production mode
@@ -430,6 +428,61 @@ If Genie Space already created:
 If Genie Space not yet created:
 1. Update the contents of `bundle/src/genie_space/genie_instructions.txt`
 2. Re-run `Demo_Setup.ipynb`
+
+### Customizing the Dashboard
+
+The AI/BI dashboard is a first-class bundle resource (`bundle/resources/Games Social Listening - Dashboard.dashboard.yml`), deployed from a serialized definition file `bundle/src/Games Social Listening Dashboard.lvdash.json`. Everything else derives from it:
+
+- The job's `dashboard_task` references it by `${resources.dashboards.games_social_listening_dashboard.id}`.
+- `Demo_Setup.ipynb` reads the deployed dashboard's ID from `databricks bundle summary` to populate the app's `config.yaml` (the embedded dashboard URL).
+
+Because the dashboard is bundle-managed, **it is read-only in the Databricks UI** — and a `databricks bundle deploy` will overwrite any UI edits. So to customize it, change the source and redeploy. There are two approaches.
+
+> **⚠️ Don't lose UI edits:** If you modify the dashboard in the Databricks UI, those changes live only in the workspace. The next `bundle deploy` will revert them unless you fold them back into the bundle (Method 1) or move off the bundle-managed dashboard (Method 2).
+
+#### Method 1: Update the `lvdash.json` (recommended)
+
+Fold your modified dashboard's content back into the bundle. The bundle-managed dashboard updates **in place** (same ID), so the job reference and app config stay valid automatically — no ID juggling.
+
+1. **Export your modified dashboard's serialized JSON.** Either via the UI (open the dashboard → kebab menu ⋮ → **Export**), or via the Lakeview API in a notebook:
+
+   ```python
+   import requests
+   from databricks.sdk import WorkspaceClient
+   w = WorkspaceClient(); host = w.config.host
+   tok = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
+
+   MODIFIED_ID = "<your-modified-dashboard-id>"
+   d = requests.get(f"{host}/api/2.0/lakeview/dashboards/{MODIFIED_ID}",
+                    headers={"Authorization": f"Bearer {tok}"}).json()
+   with open("bundle/src/Games Social Listening Dashboard.lvdash.json", "w") as f:
+       f.write(d["serialized_dashboard"])   # this field holds the .lvdash.json content
+   print("Updated bundle dashboard file.")
+   ```
+
+2. **Replace** `bundle/src/Games Social Listening Dashboard.lvdash.json` with that exported content.
+3. **Redeploy** (`databricks bundle deploy`, or re-run `Demo_Setup.ipynb`). The bundle updates its existing dashboard in place — same resource, same ID, new content — so the job's `${resources…id}` reference and the app config keep working unchanged.
+4. **Publish** the dashboard (Publish dialog → **Embed credentials**) so the app's embedded iframe and the job's dashboard link resolve. See [Troubleshooting in the README](../README.md#-troubleshooting) for embedding requirements.
+5. **Trash** any standalone/duplicate dashboard you created manually — it's now redundant.
+
+This keeps a single, bundle-managed dashboard and avoids fighting the UI lock.
+
+#### Method 2: Cloned job + cloned dashboard
+
+If you want to keep a standalone dashboard that lives **outside** the bundle, you can clone the job in the UI (a clone is a new, unmanaged job, so its `dashboard_task` is editable) and point everything at the new dashboard. This works, but it leaves orphaned resources that the bundle no longer manages — use it only when you specifically need the dashboard outside the bundle.
+
+1. In the Databricks UI, **clone** the `Games Social Listening Job`. The clone is a new, standalone job (not bundle-managed), so the UI lets you edit it.
+2. Edit the clone's **`refresh_dashboard` task** → set the dashboard to your new dashboard.
+3. Update the app's `bundle/src/app/config.yaml` so the app uses the new resources:
+   - `databricks.dashboard.url.base` → `<host>/embed/dashboardsv3/<new_dashboard_id>?`
+   - `databricks.ingestion_job_id` → the **cloned** job's ID (otherwise the app's "Add Game" button still triggers the original bundle job, which refreshes the old dashboard).
+4. **Redeploy the app** (re-run `Demo_Setup.ipynb`, or `databricks bundle deploy`) to apply the config change.
+5. **Publish** the new dashboard with **Embed credentials**.
+
+**Caveats:**
+- The cloned job and standalone dashboard are **not managed by the bundle** — `databricks bundle deploy` won't update them and `databricks bundle destroy` won't remove them.
+- The **original** bundle job and dashboard still exist (pointing at the old dashboard), so you now have duplicates to keep track of.
+- Note that what the app *displays* is controlled by `config.yaml`, not the job. The job's `dashboard_task` only refreshes/republishes the dashboard after ingestion — so if you only want the app to show a different dashboard, you may only need the `config.yaml` change, not a cloned job.
 
 ### Using Classic Compute
 
