@@ -39,6 +39,10 @@ resources:
           service_principal_name: ${resources.apps.games_social_listening_app.service_principal_client_id}
       queue:
         enabled: true
+      # Pinned to 1 so it always wins over the dev-mode preset (which sets 4).
+      # The single declarative pipeline can only run one update at a time, so
+      # concurrent job runs would only contend on the shared pipeline/dashboard.
+      max_concurrent_runs: 1
       parameters:
         - name: source_content_id
           default: com.nianticlabs.pokemongo

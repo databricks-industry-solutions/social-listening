@@ -176,6 +176,26 @@ Then, add the same snippet in `Summary_Report_Generator` as well as the followin
         start_date = start_date.strftime("%Y-%m-%d")
 ```
 
+#### Reddit Example
+Similarly, for Reddit you could add a job parameter called `reddit_time_filter`, set to one of Reddit's supported time windows: `hour`, `day`, `week`, `month`, `year`, or `all` (e.g. `week` for a weekly schedule).
+In `Abstracted Ingestion`, you could add this code snippet to read the widget value and then pass it as the `time_filter` value of the RedditIngestor::ingest() call:
+```python
+dbutils.widgets.text("reddit_time_filter", "", "Reddit Time Filter")
+reddit_time_filter = dbutils.widgets.get("reddit_time_filter")
+if reddit_time_filter not in ("hour", "day", "week", "month", "year"):
+  # Note: can raise on invalid values instead of silently falling back
+  reddit_time_filter = "all"
+```
+
+Then, add the same snippet in `Summary_Report_Generator` as well as the following additional snippet to compute the `start_date` of the persona reports:
+```python
+    from datetime import datetime, timedelta
+    time_filter_to_days = {"hour": 1/24, "day": 1, "week": 7, "month": 30, "year": 365}
+    if reddit_time_filter in time_filter_to_days:
+        start_date = datetime.now() - timedelta(days=time_filter_to_days[reddit_time_filter])
+        start_date = start_date.strftime("%Y-%m-%d")
+```
+
 Note that you should keep the default value of the widget empty if you don't want the app's original job from the bundle to be affected.
 
 Additionally, note the app will always display the most recent report for each persona (regardless of which job triggered the Summary Report generation task).
