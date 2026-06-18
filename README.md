@@ -186,11 +186,11 @@ To destroy all demo resources, uncomment the last few cells of the `Demo_Setup.i
 
 ## 🛠️ Troubleshooting
 
-### Catalog names cannot contain hyphens
+### Hyphens in Catalog names
 
-Unity Catalog catalog names cannot contain hyphens (`-`). A hyphenated catalog name will often pass the bundle-deploy step but then fail later (e.g. in the initial job cell), because the catalog name is used in unquoted SQL such as `GRANT ... ON CATALOG <name>`.
+Unity Catalog catalog names can contain hyphens (`-`), but this will cause the `Demo Setup` notebook to fail because the catalog name is used in unquoted SQL such as `GRANT ... ON CATALOG <name>`.
 
-**Fix:** Rename the catalog to remove hyphens — for example, change hyphens to underscores (`my-catalog` → `my_catalog`). The easiest way is via the **Catalog Explorer UI** (Catalog > select the catalog > kebab menu ⋮ > Rename). Then update the `catalog` widget value in `Demo_Setup.ipynb` to match exactly and re-run.
+**Fix:** Rename the catalog to remove hyphens, for example by changing hyphens to underscores (`my-catalog` → `my_catalog`). The easiest way is via the **Catalog Explorer UI** (Catalog > select the catalog > kebab menu ⋮ > Rename). Then update the `catalog` widget value in `Demo_Setup.ipynb` to match exactly and re-run.
 
 ### Errors during the bundle deploy step
 
