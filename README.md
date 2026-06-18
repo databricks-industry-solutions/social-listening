@@ -23,10 +23,12 @@ This solution uses [Databricks Asset Bundle](https://docs.databricks.com/en/dev-
 
 ### Prerequisites
 - A [Databricks workspace](https://docs.databricks.com/aws/en/admin/workspace/) with [Unity Catalog enabled](https://docs.databricks.com/aws/en/data-governance/unity-catalog/enable-workspaces)
-    - You must be a [Workspace Admin](https://docs.databricks.com/aws/en/admin/users-groups/users) to set up the demo (after setup, normal users can run and use it).
+    - And ability to create a schema or access to an existing schema
+    - Note: if you are on a Free Trial workspace created using a personal email, you may not be able to ingest data from the games platforms due to [limited external network access](https://docs.databricks.com/aws/en/getting-started/free-trial#trial-limits). Contact your Databricks account team for support.
 - Add `*.databricksapps.com` as a domain allowed to embed AI/BI Dashboards
     - Settings > Workspace Admin > Security > External Access:
 ![prereqs_domain](docs/assets/installation_alt_prereqs_domain.png)
+    - You can still proceed with demo installation/setup without this step, but the embedded dashboard will not appear in the Databricks App.
 
 - [Databricks CLI](https://docs.databricks.com/aws/en/dev-tools/cli/) installed (optional, for manual deployment)
 - [Serverless compute](https://docs.databricks.com/aws/en/compute/serverless/) available

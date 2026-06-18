@@ -9,6 +9,7 @@ This guide covers **customizing** the Games Social Listening demo and **producti
 - [Resource Naming and Prefixes](#resource-naming-and-prefixes)
 - [Enable Job Scheduling](#enable-job-scheduling)
 - [Remove Sampling (Optional)](#remove-sampling-optional)
+- [Add Slack Integration](#add-slack-integration)
 
 **Customization**
 - [Enable Steam and Reddit](#enable-steam-and-reddit)
@@ -205,6 +206,26 @@ Additionally, note the app will always display the most recent report for each p
 By default, the demo limits ingestion to the equivalent of 2,000 reviews per game for performance and cost optimization. For production use cases requiring full data coverage, you may want to remove or adjust this sampling.
 
 For more information on sampling strategy and configuration, see the [Ingestion Sampling Documentation](../bundle/src/ingestion_utils/README.md#sampling-strategy).
+
+### Add Slack Integration
+
+Slack integration could take a variety of forms, such as: job completion notifications, confirmation checks sent via Slack to allow new game additions, daily persona reports sent to a dedicated Slack channel, etc.
+
+These integrations will require you to create a Slack App and install it to your workspace:
+1. Go to [this page](https://api.slack.com/apps) and Create a New App > From scratch.
+1. Name your app and pick your workspace.
+1. Left sidebar > Features > Incoming Webhooks > Activate
+1. Add new webhook > Select channel to post to (or person/DM)
+    - You can add multiple webhooks to post to multiple places.
+1. Copy the webhook URL(s)
+    - Note that these webhook URLs should be considered **sensitive** (they include a token) so retrieve them from a safe place during actual use, e.g. [Databricks Secrets](https://docs.databricks.com/aws/en/security/secrets/).
+
+Reference code is provided in the `Slack Helper` notebook for posting simple messages to Slack as well as posting persona reports. In practice you will likely want to add this notebook as a task to the end of the existing Lakeflow job; ping your Databricks account team for assistance.
+
+Example: Adding Genie support to Slack
+1. Simply [follow the instructions on this page](https://docs.databricks.com/aws/en/genie-one/genie-slack) to add Genie to your workspace.
+1. Click the Genie app in Slack or run `/databricks-genie config` in a channel to configure it and connect to your Databricks account.
+    - More information on configuration [here](https://docs.databricks.com/aws/en/genie-one/genie-slack#configuration-levels-and-overrides).
 
 ---
 
@@ -404,6 +425,22 @@ Edit `bundle/src/config/config.yaml` to add, remove, or modify categories based 
 You should also [update the Genie Space](#genie-space) accordingly afterwards.
 
 Note that if you want to change the categories in the future after already ingesting some data, the Declarative Pipeline will require a full refresh. (Ingested data in the `bronze` table would not need to change. Changing personas or persona prompts only affects the Summary Report generation, so the Declarative Pipeline is unaffected.)
+
+In other words, do the following:
+1. Update `src/config/config.yaml` with your new categories.
+1. Update the corresponding sections in `src/genie_instructions.txt`. Make the same update in the Genie Space in the UI.
+   - The current `Demo_Setup` notebook won't update the existing Genie space, so the `.txt` change is for posterity or future new deploys and the actual change is done via UI.
+1. Re-run the `Demo_Setup` notebook.
+    - This is to ensure that the `config.yaml` used by the pipeline is updated, e.g. if not using source-linked deploy.
+1. Full refresh the pipeline.
+    - Eg. via the UI, open the pipeline (2nd task in the Lakeflow Job linked in the bottom left of the app):
+      1. Select tables for refresh
+      1. Select all except for feedback_content_translated (no need, not affected by categories)
+      1. Full refresh selection
+1. The existing games/data are now updated with the new categories, which should be visible on the dashboard (unless none of the reviews for that game fell into the new categories).
+1. To regenerate the persona reports, open either the "Games Social Listening Job" or the "Summary Report Job" in the UI (both jobs are generated during DAB deployment) and run the `summary_report_gen` task with the param `update_type` set to `REFRESH`.
+    - The `game_name` param can be anything, it won't be used with `update_type` set to `REFRESH`.
+1. Add new games as normal.
 
 ### Report Personas
 
