@@ -60,6 +60,12 @@ class BlueskyIngestor(DataIngestor):
         (Bluesky's query syntax has no reliable boolean OR) and results are de-duplicated.
         Quoted phrases and other Bluesky query syntax (from:, lang:, hashtags) pass through as-is.
 
+        Matching is case- and diacritic-insensitive ('pokemon' matches 'Pokémon'), so
+        don't list case/accent variants as separate terms — redundant variants are
+        de-duplicated but each term costs a full paginated search pass. Note that
+        Bluesky's search index also covers image alt text, link-card titles, and post
+        tags, so a matched post's content_text may not visibly contain the term.
+
         time_filter options: "all", "hour", "day", "week", "month", "year"
         sort options: "latest", "top"
         Set max_posts_per_term to zero or None to get all available posts per term.
