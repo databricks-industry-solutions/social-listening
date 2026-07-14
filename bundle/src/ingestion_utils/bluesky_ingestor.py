@@ -15,18 +15,23 @@ from pyspark.sql.types import (
 
 class BlueskyIngestor(DataIngestor):
     def __init__(self, spark: SparkSession, service_url: str="https://api.bsky.app",
-                 user_agent: str="games-social-listening-demo"):
+                 user_agent: str="games-social-listening-demo", page_delay_seconds: float=1.0):
         """
         Ingests posts from Bluesky via the app.bsky.feed.searchPosts endpoint.
         No API key is required: the default service_url is Bluesky's AppView, which
         accepts unauthenticated search requests. (The documented public host,
         public.api.bsky.app, currently returns 403 for searchPosts from some
         networks — see bluesky-social/bsky-docs#332.)
+
+        page_delay_seconds paces successive result-page requests: the AppView's edge
+        rate-limits rapid unauthenticated paging with HTTP 403 (not 429) after ~7
+        back-to-back requests, and ~1s spacing stays under that limit.
         """
         super().__init__(spark)
         self._set_content_type()
         self.service_url = service_url.rstrip("/")
         self._user_agent = user_agent
+        self._page_delay_seconds = page_delay_seconds
         self.full_bluesky_schema = StructType(
             [
                 StructField("uri", StringType(), True),
@@ -59,6 +64,11 @@ class BlueskyIngestor(DataIngestor):
         'pokemon go; "pokemon sleep"; #PokemonGO'. Each term is searched separately
         (Bluesky's query syntax has no reliable boolean OR) and results are de-duplicated.
         Quoted phrases and other Bluesky query syntax (from:, lang:, hashtags) pass through as-is.
+
+        Commas are NOT term delimiters: a comma-separated list is sent to the API as
+        one query, and Bluesky treats commas as punctuation and requires ALL words to
+        match (AND semantics) — i.e. you get the intersection of the keywords instead
+        of the union. Use semicolons to separate terms.
 
         Matching is case- and diacritic-insensitive ('pokemon' matches 'Pokémon'), so
         don't list case/accent variants as separate terms — redundant variants are
@@ -150,6 +160,11 @@ class BlueskyIngestor(DataIngestor):
         are 403-blocked on some networks (see bluesky-social/atproto#3583); in that
         case, for "latest" sort, we page by sliding an "until" boundary down to the
         oldest timestamp seen so far instead.
+
+        Page requests are paced page_delay_seconds apart because the AppView edge
+        rate-limits rapid paging with HTTP 403 (not 429). A 403 mid-pagination is
+        retried after a pause; if it persists, the rows fetched so far are returned
+        with a warning rather than failing the whole ingestion.
         """
         rows = []
         seen_uris = set() # "until" paging re-returns the boundary post despite being documented as exclusive
@@ -158,6 +173,7 @@ class BlueskyIngestor(DataIngestor):
         paginate_by_time = False # Set when cursor pagination is blocked
         until_dt = None
         last_page_oldest = None
+        retries_403_left = 2
         max_posts_per_page = 100
         while len(rows) < max_posts:
             params = {
@@ -184,6 +200,7 @@ class BlueskyIngestor(DataIngestor):
                     use_since = False
                     cursor = None
                     rows = []
+                    seen_uris = set()
                     continue
                 if cursor and not paginate_by_time and status == 403:
                     if sort != "latest":
@@ -197,7 +214,18 @@ class BlueskyIngestor(DataIngestor):
                     cursor = None
                     until_dt = last_page_oldest
                     continue
+                if status == 403 and retries_403_left > 0:
+                    # Edge rate limiting recovers within seconds; retry the same page
+                    retries_403_left -= 1
+                    time.sleep(10)
+                    continue
+                if status == 403 and len(rows) > 0:
+                    print(f"Warning: rate-limited (HTTP 403) after {len(rows)} posts for term '{term}'; "
+                          f"returning partial results")
+                    break
                 raise
+
+            retries_403_left = 2
 
             posts = response.get("posts", [])
             reached_window_edge = False
@@ -230,6 +258,7 @@ class BlueskyIngestor(DataIngestor):
                 until_dt = last_page_oldest
             elif cursor is None:
                 break
+            time.sleep(self._page_delay_seconds) # Rapid paging trips the edge rate limit (403)
         return rows
 
     def _search_page(self, params: dict) -> dict:
