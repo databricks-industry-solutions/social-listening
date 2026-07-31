@@ -177,6 +177,28 @@ Then, add the same snippet in `Summary_Report_Generator` as well as the followin
         start_date = start_date.strftime("%Y-%m-%d")
 ```
 
+#### Google Play Example
+Google Play works the same way as Steam via its own `over_past_days` parameter.
+For example, you could add a job parameter called `google_play_over_past_days`.
+In `Abstracted Ingestion`, you could add this code snippet to read the widget value and then pass it as the `over_past_days` value of the GooglePlayIngestor::ingest() call:
+```python
+dbutils.widgets.text("google_play_over_past_days", "", "Google Play Over Past Days")
+google_play_over_past_days = dbutils.widgets.get("google_play_over_past_days")
+if google_play_over_past_days != "":
+  # Note: can do a more rigorous check for float-conversion via try-except 
+  google_play_over_past_days = float(google_play_over_past_days)
+else:
+  google_play_over_past_days = None
+```
+
+Then, add the same snippet in `Summary_Report_Generator` as well as the following additional snippet to compute the `start_date` of the persona reports:
+```python
+    from datetime import datetime, timedelta
+    if google_play_over_past_days:
+        start_date = datetime.now() - timedelta(days=google_play_over_past_days)
+        start_date = start_date.strftime("%Y-%m-%d")
+```
+
 #### Reddit Example
 Similarly, for Reddit you could add a job parameter called `reddit_time_filter`, set to one of Reddit's supported time windows: `hour`, `day`, `week`, `month`, `year`, or `all` (e.g. `week` for a weekly schedule).
 In `Abstracted Ingestion`, you could add this code snippet to read the widget value and then pass it as the `time_filter` value of the RedditIngestor::ingest() call:
